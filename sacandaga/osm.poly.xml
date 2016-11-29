@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 11/27/16 18:57:31 by SUMO polyconvert Version 0.28.0
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/polyconvertConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\johnldean\Sumo\2016-11-27-18-57-30\osm.net.xml"/>
+        <osm-files value="osm_bbox.osm.xml"/>
+        <osm.keep-full-type value="true"/>
+        <type-file value="C:\Program%20Files%20(x86)\DLR\Sumo\data\typemap\osmPolyconvert.typ.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Users\johnldean\Sumo\2016-11-27-18-57-30\osm.poly.xml"/>
+    </output>
+
+    <processing>
+        <poi-layer-offset value="5"/>
+    </processing>
+
+    <report>
+        <verbose value="true"/>
+    </report>
+
+</configuration>
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <location netOffset="-578456.98,-4754574.67" convBoundary="0.00,-0.00,14354.83,8356.22" origBoundary="-74.037841,42.939621,-73.861329,43.014954" projParameter="+proj=utm +zone=18 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
+
+    <poi id="357588451" type="amenity.place_of_worship" color="237,199,199" layer="4.00" x="640.02" y="3665.63"/>
+    <poi id="357595618" type="amenity.grave_yard" color="237,199,199" layer="4.00" x="720.37" y="3775.38"/>
+    <poi id="3739640940" type="amenity.fuel" color="237,199,199" layer="4.00" x="637.14" y="3743.87"/>
+    <poi id="3739640941" type="shop.convenience" color="237,199,255" layer="4.00" x="617.65" y="3758.60"/>
+</additional>

@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2016-11-28T02:56:02Z"/>
+
+  <node id="41829381" lat="42.9740320" lon="-74.0213440"/>
+  <node id="41837233" lat="42.9501800" lon="-74.0255940"/>
+  <node id="41842997" lat="42.9847570" lon="-73.9328640"/>
+  <node id="41849720" lat="42.9963630" lon="-74.0280190"/>
+  <node id="41852173" lat="42.9685350" lon="-74.0288680"/>
+  <node id="41854137" lat="42.9833630" lon="-73.9354320"/>
+  <node id="41856395" lat="42.9744950" lon="-74.0156250"/>
+  <node id="41864432" lat="42.9744990" lon="-74.0152890"/>
+  <node id="41865262" lat="42.9859060" lon="-73.9305500"/>
+  <node id="41898276" lat="43.0050477" lon="-74.0294634"/>
+  <node id="41898796" lat="42.9742640" lon="-74.0378410"/>
+  <node id="41898797" lat="42.9743390" lon="-74.0369710"/>
+  <node id="41898800" lat="42.9744190" lon="-74.0358950"/>
+  <node id="41898802" lat="42.9744330" lon="-74.0356160"/>
+  <node id="41898805" lat="42.9744220" lon="-74.0349510"/>
+  <node id="41898808" lat="42.9743920" lon="-74.0346100"/>
+  <node id="41898811" lat="42.9743590" lon="-74.0343450"/>
+  <node id="41898815" lat="42.9743090" lon="-74.0340510"/>
+  <node id="41898818" lat="42.9742380" lon="-74.0337480"/>
+  <node id="41898820" lat="42.9740800" lon="-74.0331660"/>
+  <node id="41898823" lat="42.9735300" lon="-74.0314070"/>
+  <node id="41898825" lat="42.9732550" lon="-74.0304910"/>
+  <node id="41898827" lat="42.9731590" lon="-74.0300810"/>
+  <node id="41898829" lat="42.9731100" lon="-74.0298200"/>
+  <node id="41898831" lat="42.9730930" lon="-74.0296790">
+    <tag k="highway" v="traffic_signals"/>
+  </node>
+  <node id="41898833" lat="42.9730600" lon="-74.0294040"/>
+  <node id="41898836" lat="42.9730420" lon="-74.0290540"/>
+  <node id="41898838" lat="42.9730550" lon="-74.0284290"/>
+  <node id="41898840" lat="42.9731660" lon="-74.0274700"/>
+  <node id="41898841" lat="42.9732960" lon="-74.0265450"/>
+  <node id="41898844" lat="42.9734410" lon="-74.0255890"/>
+  <node id="41898846" lat="42.9736920" lon="-74.0236980"/>
+  <node id="41898849" lat="42.9738890" lon="-74.0222820"/>
+  <node id="41898853" lat="42.9741990" lon="-74.0201080"/>
+  <node id="41898855" lat="42.9743060" lon="-74.0193550"/>
+  <node id="41898856" lat="42.9744070" lon="-74.0185630"/>
+  <node id="41898858" lat="42.9744400" lon="-74.0181640"/>
+  <node id="41898861" lat="42.9744890" lon="-74.0172370"/>
+  <node id="41898864" lat="42.9745010" lon="-74.0164910"/>
+  <node id="41898870" lat="42.9744020" lon="-74.0116720"/>
+  <node id="41898872" lat="42.9743740" lon="-74.0102780"/>
+  <node id="41898874" lat="42.9743700" lon="-74.0094550"/>
+  <node id="41898876" lat="42.9743960" lon="-74.0085300"/>
+  <node id="41898878" lat="42.9744200" lon="-74.0081770"/>
+  <node id="41898880" lat="42.9744930" lon="-74.0075130"/>
+  <node id="41898882" lat="42.9747980" lon="-74.0033470"/>
+  <node id="41898884" lat="42.9748890" lon="-74.0023900"/>
+  <node id="41898886" lat="42.9749930" lon="-74.0011420"/>
+  <node id="41898889" lat="42.9751940" lon="-73.9985800"/>
+  <node id="41898891" lat="42.9755550" lon="-73.9939650"/>
+  <node id="41898892" lat="42.9755980" lon="-73.9932210"/>
+  <node id="41898894" lat="42.9756150" lon="-73.9926850"/>
+  <node id="41898897" lat="42.9755780" lon="-73.9920430"/>
+  <node id="41898899" lat="42.9754820" lon="-73.9912960"/>
+  <node id="41898900" lat="42.9752780" lon="-73.9904140"/>
+  <node id="41898902" lat="42.9749760" lon="-73.9891840"/>
+  <node id="41898904" lat="42.9747700" lon="-73.9883000"/>
+  <node id="41898907" lat="42.9746650" lon="-73.9876980"/>
+  <node id="41898909" lat="42.9745460" lon="-73.9865340"/>
+  <node id="41898911" lat="42.9744850" lon="-73.9856950"/>
+  <node id="41898913" lat="42.9743190" lon="-73.9837330"/>
+  <node id="41898916" lat="42.9742670" lon="-73.9831310"/>
+  <node id="41898918" lat="42.9740840" lon="-73.9804340"/>
+  <node id="41898920" lat="42.9740210" lon="-73.9788560"/>
+  <node id="41898922" lat="42.9740070" lon="-73.9778370"/>
+  <node id="41898925" lat="42.9740270" lon="-73.9764610"/>
+  <node id="41898927" lat="42.9740250" lon="-73.9762700"/>
+  <node id="41898929" lat="42.9740510" lon="-73.9757080"/>
+  <node id="41898931" lat="42.9741160" lon="-73.9737720"/>
+  <node id="41898933" lat="42.9741790" lon="-73.9725090"/>
+  <node id="41898935" lat="42.9742260" lon="-73.9720670"/>
+  <node id="41898937" lat="42.9743540" lon="-73.9714090"/>
+  <node id="41898939" lat="42.9744430" lon="-73.9710850"/>
+  <node id="41898941" lat="42.9745600" lon="-73.9707550"/>
+  <node id="41898943" lat="42.9749650" lon="-73.9697260"/>
+  <node id="41898945" lat="42.9753800" lon="-73.9687970"/>
+  <node id="41898947" lat="42.9754060" lon="-73.9687400"/>
+  <node id="41898949" lat="42.9756460" lon="-73.9681860"/>
+  <node id="41898951" lat="42.9758900" lon="-73.9675320"/>
+  <node id="41898953" lat="42.9759970" lon="-73.9672050"/>
+  <node id="41898956" lat="42.9760910" lon="-73.9668750"/>
+  <node id="41898957" lat="42.9761900" lon="-73.9665170"/>
+  <node id="41898959" lat="42.9762970" lon="-73.9660630"/>
+  <node id="41898960" lat="42.9764350" lon="-73.9653210"/>
+  <node id="41898962" lat="42.9765000" lon="-73.9649130"/>
+  <node id="41898963" lat="42.9766100" lon="-73.9634830"/>
+  <node id="41898964" lat="42.9767320" lon="-73.9611930"/>
+  <node id="41898966" lat="42.9767770" lon="-73.9602720"/>
+  <node id="41898970" lat="42.9768640" lon="-73.9590380"/>
+  <node id="41898972" lat="42.9769000" lon="-73.9586670"/>
+  <node id="41898974" lat="42.9769920" lon="-73.9580800"/>
+  <node id="41898977" lat="42.9771100" lon="-73.9575660"/>
+  <node id="41898979" lat="42.9776560" lon="-73.9555270"/>
+  <node id="41898981" lat="42.9778100" lon="-73.9547820"/>
+  <node id="41898985" lat="42.9778940" lon="-73.9543570"/>
+  <node id="41898987" lat="42.9779850" lon="-73.9536030"/>
+  <node id="41898989" lat="42.9781180" lon="-73.9521940"/>
+  <node id="41898992" lat="42.9781800" lon="-73.9513540"/>
+  <node id="41898995" lat="42.9782310" lon="-73.9508570"/>
+  <node id="41898998" lat="42.9783280" lon="-73.9497890"/>
+  <node id="41899000" lat="42.9784300" lon="-73.9485100"/>
+  <node id="41899003" lat="42.9785220" lon="-73.9471430"/>
+  <node id="41899007" lat="42.9785940" lon="-73.9462480"/>
+  <node id="41899009" lat="42.9786350" lon="-73.9458330"/>
+  <node id="41899011" lat="42.9787010" lon="-73.9453100"/>
+  <node id="41899013" lat="42.9787580" lon="-73.9450170"/>
+  <node id="41899014" lat="42.9791070" lon="-73.9434600"/>
+  <node id="41899017" lat="42.9793380" lon="-73.9425370"/>
+  <node id="41899019" lat="42.9795530" lon="-73.9418750"/>
+  <node id="41899021" lat="42.9798010" lon="-73.9412200"/>
+  <node id="41899024" lat="42.9801710" lon="-73.9404220"/>
+  <node id="41899026" lat="42.9803190" lon="-73.9401430"/>
+  <node id="41899028" lat="42.9806060" lon="-73.9396500"/>
+  <node id="41899030" lat="42.9819770" lon="-73.9375190"/>
+  <node id="41899032" lat="42.9832320" lon="-73.9356560"/>
+  <node id="41899036" lat="42.9835550" lon="-73.9351680"/>
+  <node id="41899037" lat="42.9837400" lon="-73.9348610"/>
+  <node id="41899038" lat="42.9840470" lon="-73.9343270"/>
+  <node id="41899042" lat="42.9851480" lon="-73.9320420"/>
+  <node id="41899045" lat="42.9853930" lon="-73.9315100"/>
+  <node id="41899048" lat="42.9858180" lon="-73.9307000"/>
+  <node id="41899050" lat="42.9859710" lon="-73.9304380"/>
+  <node id="41899052" lat="42.9863180" lon="-73.9299490"/>
+  <node id="41899053" lat="42.9865820" lon="-73.9296580"/>
+  <node id="41899056" lat="42.9870340" lon="-73.9292440"/>
+  <node id="41899058" lat="42.9874770" lon="-73.9288750"/>
+  <node id="41899060" lat="42.9878670" lon="-73.9285850"/>
+  <node id="41899061" lat="42.9888280" lon="-73.9278330"/>
+  <node id="41899064" lat="42.9898170" lon="-73.9270730"/>
+  <node id="41899067" lat="42.9907960" lon="-73.9262850"/>
+  <node id="41899069" lat="42.9911610" lon="-73.9259530"/>
+  <node id="41899072" lat="42.9915450" lon="-73.9255510"/>
+  <node id="41899075" lat="42.9920440" lon="-73.9249810"/>
+  <node id="41899077" lat="42.9931490" lon="-73.9236750"/>
+  <node id="41899081" lat="42.9936220" lon="-73.9230620"/>
+  <node id="41899084" lat="42.9938450" lon="-73.9227280"/>
+  <node id="41899087" lat="42.9940130" lon="-73.9224580"/>
+  <node id="41899089" lat="42.9943270" lon="-73.9218240"/>
+  <node id="41899091" lat="42.9944180" lon="-73.9216050"/>
+  <node id="41899094" lat="42.9945370" lon="-73.9212590"/>
+  <node id="41899097" lat="42.9946840" lon="-73.9207780"/>
+  <node id="41899099" lat="42.9948540" lon="-73.9200680"/>
+  <node id="41899102" lat="42.9949120" lon="-73.9196310"/>
+  <node id="41899105" lat="42.9950670" lon="-73.9180300"/>
+  <node id="41899107" lat="42.9953710" lon="-73.9142140"/>
+  <node id="41899108" lat="42.9954190" lon="-73.9136880"/>
+  <node id="41899110" lat="42.9955030" lon="-73.9126140"/>
+  <node id="41899114" lat="42.9956700" lon="-73.9107940"/>
+  <node id="41899117" lat="42.9959150" lon="-73.9077250"/>
+  <node id="41899119" lat="42.9960950" lon="-73.9055530"/>
+  <node id="41899121" lat="42.9962560" lon="-73.9035020"/>
+  <node id="41899124" lat="42.9963200" lon="-73.9025980"/>
+  <node id="41899126" lat="42.9964550" lon="-73.9009940"/>
+  <node id="41899129" lat="42.9966200" lon="-73.8988740"/>
+  <node id="41899132" lat="42.9967000" lon="-73.8979990"/>
+  <node id="41899134" lat="42.9967430" lon="-73.8974490"/>
+  <node id="41899138" lat="42.9967920" lon="-73.8970280"/>
+  <node id="41899141" lat="42.9969970" lon="-73.8945230"/>
+  <node id="41899144" lat="42.9970890" lon="-73.8931820"/>
+  <node id="41899147" lat="42.9971650" lon="-73.8924810"/>
+  <node id="41899150" lat="42.9975260" lon="-73.8886750"/>
+  <node id="41899153" lat="42.9976340" lon="-73.8876160"/>
+  <node id="41899157" lat="42.9977350" lon="-73.8865000"/>
+  <node id="41899162" lat="42.9979480" lon="-73.8843770"/>
+  <node id="41899165" lat="42.9979850" lon="-73.8840480">
+    <tag k="highway" v="traffic_signals"/>
+  </node>
+  <node id="41899168" lat="42.9981810" lon="-73.8821500"/>
+  <node id="41899170" lat="42.9984130" lon="-73.8796060"/>
+  <node id="41899173" lat="42.9985160" lon="-73.8783380"/>
+  <node id="41899174" lat="42.9985560" lon="-73.8777820"/>
+  <node id="41899177" lat="42.9987500" lon="-73.8751420"/>
+  <node id="41899180" lat="42.9990230" lon="-73.8717800"/>
+  <node id="41899182" lat="42.9990870" lon="-73.8706980"/>
+  <node id="41899185" lat="42.9991980" lon="-73.8695300"/>
+  <node id="41899188" lat="42.9992250" lon="-73.8690890"/>
+  <node id="41899192" lat="42.9993370" lon="-73.8680240"/>
+  <node id="41899195" lat="42.9993870" lon="-73.8674160"/>
+  <node id="41899198" lat="42.9995060" lon="-73.8657000"/>
+  <node id="41899201" lat="42.9996160" lon="-73.8645360"/>
+  <node id="41899206" lat="42.9997410" lon="-73.8631330"/>
+  <node id="41899209" lat="42.9998810" lon="-73.8613290"/>
+  <node id="42046113" lat="42.9396210" lon="-74.0210760"/>
+  <node id="42075647" lat="42.9410680" lon="-74.0235330"/>
+  <node id="42102394" lat="43.0149540" lon="-74.0310570"/>
+  <node id="42149627" lat="42.9402870" lon="-74.0224590"/>
+  <node id="42149635" lat="42.9403840" lon="-74.0226440"/>
+  <node id="42149639" lat="42.9405690" lon="-74.0229260"/>
+  <node id="42149643" lat="42.9406800" lon="-74.0230720"/>
+  <node id="42149651" lat="42.9411330" lon="-74.0235900"/>
+  <node id="42149659" lat="42.9413640" lon="-74.0238130"/>
+  <node id="42149664" lat="42.9417780" lon="-74.0240850"/>
+  <node id="42149668" lat="42.9420720" lon="-74.0242310"/>
+  <node id="42149671" lat="42.9422180" lon="-74.0242870"/>
+  <node id="42149675" lat="42.9426060" lon="-74.0243810"/>
+  <node id="42149679" lat="42.9435840" lon="-74.0245380"/>
+  <node id="42149684" lat="42.9449380" lon="-74.0247350"/>
+  <node id="42149688" lat="42.9474390" lon="-74.0251190"/>
+  <node id="42149694" lat="42.9492400" lon="-74.0254350"/>
+  <node id="42149700" lat="42.9510330" lon="-74.0257390"/>
+  <node id="42149706" lat="42.9541510" lon="-74.0263080"/>
+  <node id="42149710" lat="42.9571870" lon="-74.0268130"/>
+  <node id="42149715" lat="42.9593240" lon="-74.0272040"/>
+  <node id="42149723" lat="42.9596010" lon="-74.0272570"/>
+  <node id="42149725" lat="42.9602740" lon="-74.0273910"/>
+  <node id="42149727" lat="42.9637320" lon="-74.0280810"/>
+  <node id="42149732" lat="42.9646790" lon="-74.0282500"/>
+  <node id="42149736" lat="42.9662590" lon="-74.0285160"/>
+  <node id="42149742" lat="42.9684440" lon="-74.0288500"/>
+  <node id="42149752" lat="42.9694020" lon="-74.0290410"/>
+  <node id="42149756" lat="42.9699750" lon="-74.0291270"/>
+  <node id="42149760" lat="42.9703570" lon="-74.0292020"/>
+  <node id="42149764" lat="42.9720940" lon="-74.0295020"/>
+  <node id="42149772" lat="42.9741060" lon="-74.0298580"/>
+  <node id="42149777" lat="42.9760310" lon="-74.0302010"/>
+  <node id="42149788" lat="42.9807190" lon="-74.0310230"/>
+  <node id="42149793" lat="42.9817260" lon="-74.0311400"/>
+  <node id="42149801" lat="42.9823490" lon="-74.0310880"/>
+  <node id="42149809" lat="42.9828960" lon="-74.0308940"/>
+  <node id="42149817" lat="42.9833220" lon="-74.0306530"/>
+  <node id="42149820" lat="42.9842370" lon="-74.0300280"/>
+  <node id="42149824" lat="42.9852210" lon="-74.0294660"/>
+  <node id="42149834" lat="42.9862180" lon="-74.0289960"/>
+  <node id="42149850" lat="42.9902340" lon="-74.0272830"/>
+  <node id="42149860" lat="42.9908310" lon="-74.0271400"/>
+  <node id="42149872" lat="42.9913970" lon="-74.0271370"/>
+  <node id="42149878" lat="42.9941210" lon="-74.0276040"/>
+  <node id="42149890" lat="42.9987550" lon="-74.0284590"/>
+  <node id="42149905" lat="43.0031500" lon="-74.0292040"/>
+  <node id="42149914" lat="43.0069740" lon="-74.0298430"/>
+  <node id="42149926" lat="43.0108300" lon="-74.0304150"/>
+  <node id="42149936" lat="43.0136520" lon="-74.0308600"/>
+  <node id="357588451" lat="42.9727064" lon="-74.0300167">
+    <tag k="amenity" v="place_of_worship"/>
+    <tag k="ele" v="244"/>
+    <tag k="gnis:county_id" v="091"/>
+    <tag k="gnis:created" v="01/23/1980"/>
+    <tag k="gnis:feature_id" v="964663"/>
+    <tag k="gnis:state_id" v="36"/>
+    <tag k="name" v="Scotch Church"/>
+    <tag k="religion" v="christian"/>
+  </node>
+  <node id="357595618" lat="42.9736862" lon="-74.0290159">
+    <tag k="amenity" v="grave_yard"/>
+    <tag k="ele" v="244"/>
+    <tag k="gnis:county_id" v="091"/>
+    <tag k="gnis:created" v="01/23/1980"/>
+    <tag k="gnis:feature_id" v="969174"/>
+    <tag k="gnis:state_id" v="36"/>
+    <tag k="name" v="West Charlton Cemetery"/>
+  </node>
+  <node id="3739640940" lat="42.9734111" lon="-74.0300409">
+    <tag k="amenity" v="fuel"/>
+  </node>
+  <node id="3739640941" lat="42.9735458" lon="-74.0302778">
+    <tag k="shop" v="convenience"/>
+  </node>
+  <way id="5637144">
+    <nd ref="41898796"/>
+    <nd ref="41898797"/>
+    <nd ref="41898800"/>
+    <nd ref="41898802"/>
+    <nd ref="41898805"/>
+    <nd ref="41898808"/>
+    <nd ref="41898811"/>
+    <nd ref="41898815"/>
+    <nd ref="41898818"/>
+    <nd ref="41898820"/>
+    <nd ref="41898823"/>
+    <nd ref="41898825"/>
+    <nd ref="41898827"/>
+    <nd ref="41898829"/>
+    <nd ref="41898831"/>
+    <nd ref="41898833"/>
+    <nd ref="41898836"/>
+    <nd ref="41898838"/>
+    <nd ref="41898840"/>
+    <nd ref="41898841"/>
+    <nd ref="41898844"/>
+    <nd ref="41898846"/>
+    <nd ref="41898849"/>
+    <nd ref="41829381"/>
+    <nd ref="41898853"/>
+    <nd ref="41898855"/>
+    <nd ref="41898856"/>
+    <nd ref="41898858"/>
+    <nd ref="41898861"/>
+    <nd ref="41898864"/>
+    <nd ref="41856395"/>
+    <nd ref="41864432"/>
+    <nd ref="41898870"/>
+    <nd ref="41898872"/>
+    <nd ref="41898874"/>
+    <nd ref="41898876"/>
+    <nd ref="41898878"/>
+    <nd ref="41898880"/>
+    <nd ref="41898882"/>
+    <nd ref="41898884"/>
+    <nd ref="41898886"/>
+    <nd ref="41898889"/>
+    <nd ref="41898891"/>
+    <nd ref="41898892"/>
+    <nd ref="41898894"/>
+    <nd ref="41898897"/>
+    <nd ref="41898899"/>
+    <nd ref="41898900"/>
+    <nd ref="41898902"/>
+    <nd ref="41898904"/>
+    <nd ref="41898907"/>
+    <nd ref="41898909"/>
+    <nd ref="41898911"/>
+    <nd ref="41898913"/>
+    <nd ref="41898916"/>
+    <nd ref="41898918"/>
+    <nd ref="41898920"/>
+    <nd ref="41898922"/>
+    <nd ref="41898925"/>
+    <nd ref="41898927"/>
+    <nd ref="41898929"/>
+    <nd ref="41898931"/>
+    <nd ref="41898933"/>
+    <nd ref="41898935"/>
+    <nd ref="41898937"/>
+    <nd ref="41898939"/>
+    <nd ref="41898941"/>
+    <nd ref="41898943"/>
+    <nd ref="41898945"/>
+    <nd ref="41898947"/>
+    <nd ref="41898949"/>
+    <nd ref="41898951"/>
+    <nd ref="41898953"/>
+    <nd ref="41898956"/>
+    <nd ref="41898957"/>
+    <nd ref="41898959"/>
+    <nd ref="41898960"/>
+    <nd ref="41898962"/>
+    <nd ref="41898963"/>
+    <nd ref="41898964"/>
+    <nd ref="41898966"/>
+    <nd ref="41898970"/>
+    <nd ref="41898972"/>
+    <nd ref="41898974"/>
+    <nd ref="41898977"/>
+    <nd ref="41898979"/>
+    <nd ref="41898981"/>
+    <nd ref="41898985"/>
+    <nd ref="41898987"/>
+    <nd ref="41898989"/>
+    <nd ref="41898992"/>
+    <nd ref="41898995"/>
+    <nd ref="41898998"/>
+    <nd ref="41899000"/>
+    <nd ref="41899003"/>
+    <nd ref="41899007"/>
+    <nd ref="41899009"/>
+    <nd ref="41899011"/>
+    <nd ref="41899013"/>
+    <nd ref="41899014"/>
+    <nd ref="41899017"/>
+    <nd ref="41899019"/>
+    <nd ref="41899021"/>
+    <nd ref="41899024"/>
+    <nd ref="41899026"/>
+    <nd ref="41899028"/>
+    <nd ref="41899030"/>
+    <nd ref="41899032"/>
+    <nd ref="41854137"/>
+    <nd ref="41899036"/>
+    <nd ref="41899037"/>
+    <nd ref="41899038"/>
+    <nd ref="41842997"/>
+    <nd ref="41899042"/>
+    <nd ref="41899045"/>
+    <nd ref="41899048"/>
+    <nd ref="41865262"/>
+    <nd ref="41899050"/>
+    <nd ref="41899052"/>
+    <nd ref="41899053"/>
+    <nd ref="41899056"/>
+    <nd ref="41899058"/>
+    <nd ref="41899060"/>
+    <nd ref="41899061"/>
+    <nd ref="41899064"/>
+    <nd ref="41899067"/>
+    <nd ref="41899069"/>
+    <nd ref="41899072"/>
+    <nd ref="41899075"/>
+    <nd ref="41899077"/>
+    <nd ref="41899081"/>
+    <nd ref="41899084"/>
+    <nd ref="41899087"/>
+    <nd ref="41899089"/>
+    <nd ref="41899091"/>
+    <nd ref="41899094"/>
+    <nd ref="41899097"/>
+    <nd ref="41899099"/>
+    <nd ref="41899102"/>
+    <nd ref="41899105"/>
+    <nd ref="41899107"/>
+    <nd ref="41899108"/>
+    <nd ref="41899110"/>
+    <nd ref="41899114"/>
+    <nd ref="41899117"/>
+    <nd ref="41899119"/>
+    <nd ref="41899121"/>
+    <nd ref="41899124"/>
+    <nd ref="41899126"/>
+    <nd ref="41899129"/>
+    <nd ref="41899132"/>
+    <nd ref="41899134"/>
+    <nd ref="41899138"/>
+    <nd ref="41899141"/>
+    <nd ref="41899144"/>
+    <nd ref="41899147"/>
+    <nd ref="41899150"/>
+    <nd ref="41899153"/>
+    <nd ref="41899157"/>
+    <nd ref="41899162"/>
+    <nd ref="41899165"/>
+    <nd ref="41899168"/>
+    <nd ref="41899170"/>
+    <nd ref="41899173"/>
+    <nd ref="41899174"/>
+    <nd ref="41899177"/>
+    <nd ref="41899180"/>
+    <nd ref="41899182"/>
+    <nd ref="41899185"/>
+    <nd ref="41899188"/>
+    <nd ref="41899192"/>
+    <nd ref="41899195"/>
+    <nd ref="41899198"/>
+    <nd ref="41899201"/>
+    <nd ref="41899206"/>
+    <nd ref="41899209"/>
+    <tag k="alt_name" v="State Highway 67"/>
+    <tag k="hgv" v="designated"/>
+    <tag k="hgv:state_network" v="yes"/>
+    <tag k="highway" v="secondary"/>
+    <tag k="lanes" v="2"/>
+    <tag k="maxspeed" v="55 mph"/>
+    <tag k="name" v="Amsterdam Road"/>
+    <tag k="ref" v="NY 67"/>
+    <tag k="source:hgv:state_network" v="NYSDOT https://www.dot.ny.gov/divisions/operating/oom/transportation-systems/repository/2010%20trk%20access%20bk.pdf"/>
+    <tag k="tiger:cfcc" v="A31"/>
+    <tag k="tiger:county" v="Saratoga, NY"/>
+    <tag k="tiger:name_base" v="State Highway 67"/>
+    <tag k="tiger:name_base_1" v="West High"/>
+    <tag k="tiger:name_type_1" v="St"/>
+  </way>
+  <way id="5652117">
+    <nd ref="42046113"/>
+    <nd ref="42149627"/>
+    <nd ref="42149635"/>
+    <nd ref="42149639"/>
+    <nd ref="42149643"/>
+    <nd ref="42075647"/>
+    <nd ref="42149651"/>
+    <nd ref="42149659"/>
+    <nd ref="42149664"/>
+    <nd ref="42149668"/>
+    <nd ref="42149671"/>
+    <nd ref="42149675"/>
+    <nd ref="42149679"/>
+    <nd ref="42149684"/>
+    <nd ref="42149688"/>
+    <nd ref="42149694"/>
+    <nd ref="41837233"/>
+    <nd ref="42149700"/>
+    <nd ref="42149706"/>
+    <nd ref="42149710"/>
+    <nd ref="42149715"/>
+    <nd ref="42149723"/>
+    <nd ref="42149725"/>
+    <nd ref="42149727"/>
+    <nd ref="42149732"/>
+    <nd ref="42149736"/>
+    <nd ref="42149742"/>
+    <nd ref="41852173"/>
+    <nd ref="42149752"/>
+    <nd ref="42149756"/>
+    <nd ref="42149760"/>
+    <nd ref="42149764"/>
+    <nd ref="41898831"/>
+    <nd ref="42149772"/>
+    <nd ref="42149777"/>
+    <nd ref="42149788"/>
+    <nd ref="42149793"/>
+    <nd ref="42149801"/>
+    <nd ref="42149809"/>
+    <nd ref="42149817"/>
+    <nd ref="42149820"/>
+    <nd ref="42149824"/>
+    <nd ref="42149834"/>
+    <nd ref="42149850"/>
+    <nd ref="42149860"/>
+    <nd ref="42149872"/>
+    <nd ref="42149878"/>
+    <nd ref="41849720"/>
+    <nd ref="42149890"/>
+    <nd ref="42149905"/>
+    <nd ref="41898276"/>
+    <nd ref="42149914"/>
+    <nd ref="42149926"/>
+    <nd ref="42149936"/>
+    <nd ref="42102394"/>
+    <tag k="highway" v="secondary"/>
+    <tag k="maxspeed" v="55 mph"/>
+    <tag k="name" v="Sacandaga Road"/>
+    <tag k="name_1" v="State Highway 147"/>
+    <tag k="ref" v="NY 147"/>
+    <tag k="tiger:cfcc" v="A31"/>
+    <tag k="tiger:county" v="Saratoga, NY"/>
+    <tag k="tiger:name_base" v="Sacandaga"/>
+    <tag k="tiger:name_base_1" v="State Highway 147"/>
+    <tag k="tiger:name_type" v="Rd"/>
+    <tag k="tiger:zip_left" v="12074"/>
+    <tag k="tiger:zip_right" v="12074"/>
+  </way>
+  <relation id="334181">
+    <member type="way" ref="44845900" role=""/>
+    <member type="way" ref="48986709" role=""/>
+    <member type="way" ref="395157443" role=""/>
+    <member type="way" ref="5654020" role=""/>
+    <member type="way" ref="5652507" role=""/>
+    <member type="way" ref="92798887" role=""/>
+    <member type="way" ref="92798879" role=""/>
+    <member type="way" ref="5637212" role=""/>
+    <member type="way" ref="147093266" role=""/>
+    <member type="way" ref="147093265" role=""/>
+    <member type="way" ref="298243588" role="west"/>
+    <member type="way" ref="298243592" role="west"/>
+    <member type="way" ref="298243589" role="east"/>
+    <member type="way" ref="298243595" role="east"/>
+    <member type="way" ref="298243594" role="east"/>
+    <member type="way" ref="298243590" role="west"/>
+    <member type="way" ref="298243587" role=""/>
+    <member type="way" ref="128828640" role="forward"/>
+    <member type="way" ref="139324160" role="forward"/>
+    <member type="way" ref="128828655" role="forward"/>
+    <member type="way" ref="128828649" role="forward"/>
+    <member type="way" ref="128828657" role="forward"/>
+    <member type="way" ref="139324109" role="forward"/>
+    <member type="way" ref="139324162" role="forward"/>
+    <member type="way" ref="128828644" role="forward"/>
+    <member type="way" ref="147093269" role=""/>
+    <member type="way" ref="147093254" role=""/>
+    <member type="way" ref="147093270" role="south"/>
+    <member type="way" ref="147093284" role=""/>
+    <member type="way" ref="172353034" role=""/>
+    <member type="way" ref="147093276" role="forward"/>
+    <member type="way" ref="147093280" role=""/>
+    <member type="way" ref="33652448" role=""/>
+    <member type="way" ref="147093273" role="forward"/>
+    <member type="way" ref="42431354" role=""/>
+    <member type="way" ref="5618520" role=""/>
+    <member type="way" ref="106803334" role=""/>
+    <member type="way" ref="106803305" role=""/>
+    <member type="way" ref="147093253" role="forward"/>
+    <member type="way" ref="20119789" role=""/>
+    <member type="way" ref="20119667" role=""/>
+    <member type="way" ref="251442824" role=""/>
+    <member type="way" ref="251442823" role=""/>
+    <member type="way" ref="20082351" role=""/>
+    <member type="way" ref="20081535" role=""/>
+    <member type="way" ref="67790433" role=""/>
+    <member type="way" ref="20082381" role=""/>
+    <member type="way" ref="20080463" role=""/>
+    <member type="way" ref="117691652" role=""/>
+    <member type="way" ref="117691623" role=""/>
+    <member type="way" ref="44868653" role=""/>
+    <member type="way" ref="20081166" role=""/>
+    <member type="way" ref="139324074" role=""/>
+    <member type="way" ref="20080372" role=""/>
+    <member type="way" ref="20082383" role=""/>
+    <member type="way" ref="190137528" role=""/>
+    <member type="way" ref="20119766" role=""/>
+    <member type="way" ref="67969755" role=""/>
+    <member type="way" ref="20116239" role=""/>
+    <member type="way" ref="181033361" role=""/>
+    <member type="way" ref="118714465" role=""/>
+    <member type="way" ref="118714391" role=""/>
+    <member type="way" ref="44838308" role=""/>
+    <member type="way" ref="20116268" role="forward"/>
+    <member type="way" ref="181033359" role="forward"/>
+    <member type="way" ref="118714482" role="forward"/>
+    <member type="way" ref="55324133" role="forward"/>
+    <member type="way" ref="20120869" role="forward"/>
+    <member type="way" ref="55324134" role="forward"/>
+    <member type="way" ref="44859790" role="forward"/>
+    <member type="way" ref="45051148" role="forward"/>
+    <member type="way" ref="279667384" role="forward"/>
+    <member type="way" ref="279667380" role="forward"/>
+    <member type="way" ref="279667383" role="forward"/>
+    <member type="way" ref="279667381" role="forward"/>
+    <member type="way" ref="44859776" role="forward"/>
+    <member type="way" ref="368011015" role="forward"/>
+    <member type="way" ref="368011014" role="forward"/>
+    <member type="way" ref="279667382" role="forward"/>
+    <member type="way" ref="20115619" role="forward"/>
+    <member type="way" ref="181033358" role="forward"/>
+    <member type="way" ref="44627053" role="forward"/>
+    <member type="way" ref="180900609" role="forward"/>
+    <member type="way" ref="20116286" role="forward"/>
+    <member type="way" ref="20117868" role="forward"/>
+    <member type="way" ref="44859782" role="forward"/>
+    <member type="way" ref="368011023" role="forward"/>
+    <member type="way" ref="20117193" role="forward"/>
+    <member type="way" ref="20119510" role="forward"/>
+    <member type="way" ref="55400374" role="forward"/>
+    <member type="way" ref="55400385" role="forward"/>
+    <member type="way" ref="20119786" role="forward"/>
+    <member type="way" ref="368011017" role=""/>
+    <member type="way" ref="368011016" role=""/>
+    <member type="way" ref="20118976" role=""/>
+    <member type="way" ref="20118971" role=""/>
+    <member type="way" ref="20119754" role=""/>
+    <member type="way" ref="358451777" role=""/>
+    <member type="way" ref="20118006" role=""/>
+    <member type="way" ref="44853551" role=""/>
+    <member type="way" ref="418447583" role=""/>
+    <member type="way" ref="418447588" role=""/>
+    <member type="way" ref="5637144" role=""/>
+    <member type="way" ref="5651277" role=""/>
+    <member type="way" ref="5644952" role=""/>
+    <member type="way" ref="5640315" role=""/>
+    <member type="way" ref="136139674" role=""/>
+    <member type="way" ref="5637170" role=""/>
+    <member type="way" ref="233576991" role=""/>
+    <member type="way" ref="233576985" role=""/>
+    <member type="way" ref="125232292" role=""/>
+    <member type="way" ref="125232216" role=""/>
+    <member type="way" ref="33652452" role="forward"/>
+    <member type="way" ref="139324117" role="forward"/>
+    <member type="way" ref="33652431" role="forward"/>
+    <member type="way" ref="33652428" role="forward"/>
+    <member type="way" ref="33632969" role="forward"/>
+    <member type="way" ref="377909251" role="forward"/>
+    <member type="way" ref="33652422" role="forward"/>
+    <member type="way" ref="33652441" role="forward"/>
+    <member type="way" ref="33652442" role="forward"/>
+    <member type="way" ref="33652454" role="forward"/>
+    <member type="way" ref="139324113" role="forward"/>
+    <member type="way" ref="33652432" role="forward"/>
+    <member type="way" ref="139324177" role="forward"/>
+    <member type="way" ref="377909253" role="forward"/>
+    <member type="way" ref="377909252" role="forward"/>
+    <member type="way" ref="33652433" role="forward"/>
+    <member type="way" ref="33652424" role="forward"/>
+    <member type="way" ref="139324185" role="forward"/>
+    <member type="way" ref="33652436" role="forward"/>
+    <member type="way" ref="317404991" role="forward"/>
+    <member type="way" ref="172353031" role="forward"/>
+    <member type="way" ref="33652449" role="forward"/>
+    <member type="way" ref="5639759" role=""/>
+    <member type="way" ref="5637172" role=""/>
+    <member type="way" ref="51749604" role=""/>
+    <member type="way" ref="5623629" role=""/>
+    <member type="way" ref="5621567" role=""/>
+    <member type="way" ref="147049983" role=""/>
+    <member type="way" ref="93276335" role=""/>
+    <member type="way" ref="93276333" role=""/>
+    <member type="way" ref="42431355" role=""/>
+    <member type="way" ref="106803338" role=""/>
+    <member type="way" ref="5640855" role=""/>
+    <member type="way" ref="93276328" role=""/>
+    <member type="way" ref="93276334" role=""/>
+    <member type="way" ref="93276331" role=""/>
+    <member type="way" ref="51111966" role=""/>
+    <member type="way" ref="5631087" role=""/>
+    <member type="way" ref="106803339" role=""/>
+    <member type="way" ref="106803312" role=""/>
+    <member type="way" ref="45742355" role=""/>
+    <member type="way" ref="45742358" role=""/>
+    <member type="way" ref="106803306" role=""/>
+    <member type="way" ref="106803323" role=""/>
+    <member type="way" ref="106803321" role=""/>
+    <member type="way" ref="106803303" role=""/>
+    <member type="way" ref="106803318" role=""/>
+    <member type="way" ref="106803304" role=""/>
+    <member type="way" ref="158969536" role=""/>
+    <member type="way" ref="158969539" role=""/>
+    <member type="way" ref="20631446" role=""/>
+    <member type="way" ref="20643944" role=""/>
+    <member type="way" ref="106803317" role=""/>
+    <member type="way" ref="5620335" role=""/>
+    <member type="way" ref="5618554" role=""/>
+    <member type="way" ref="175788534" role=""/>
+    <member type="way" ref="377909249" role="forward"/>
+    <tag k="is_in:state" v="NY"/>
+    <tag k="name" v="NY 67"/>
+    <tag k="network" v="US:NY"/>
+    <tag k="ref" v="67"/>
+    <tag k="route" v="road"/>
+    <tag k="symbol" v="http://en.wikipedia.org/wiki/File:NY-67.svg"/>
+    <tag k="type" v="route"/>
+    <tag k="url" v="http://en.wikipedia.org/wiki/New_York_State_Route_67"/>
+  </relation>
+  <relation id="545877">
+    <member type="way" ref="5652117" role=""/>
+    <member type="way" ref="5650403" role=""/>
+    <member type="way" ref="5634623" role=""/>
+    <member type="way" ref="5652122" role=""/>
+    <member type="way" ref="54449317" role=""/>
+    <member type="way" ref="5647868" role=""/>
+    <member type="way" ref="55875422" role=""/>
+    <tag k="is_in:state" v="NY"/>
+    <tag k="name" v="NY 147"/>
+    <tag k="network" v="US:NY"/>
+    <tag k="ref" v="147"/>
+    <tag k="route" v="road"/>
+    <tag k="symbol" v="http://en.wikipedia.org/wiki/File:NY-147.svg"/>
+    <tag k="type" v="route"/>
+    <tag k="url" v="http://en.wikipedia.org/wiki/New_York_State_Route_147"/>
+  </relation>
+
+</osm>
