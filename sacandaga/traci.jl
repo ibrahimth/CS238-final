@@ -26,12 +26,17 @@ traci.start(sumoCmd)
 step = 0
 while step < 10000
    traci.simulationStep()
+  #  try
+  #    traci.poi[:add]("001", pos_I[1], pos_I[2], (237,199,199,255), "car")
+  #  end
+   #println(traci.poi[:getParameter](traci.poi[:getIDList]()[1],"width"))
    vehicles = traci.vehicle[:getIDList]()
    for vehicle in vehicles
      pos = traci.vehicle[:getPosition](vehicle)
      dist = traci.simulation[:getDistance2D](pos[1], pos[2], pos_I[1], pos_I[2])
      if dist < 100
        speed = traci.vehicle[:getSpeed](vehicle)
+       traci.vehicle[:setColor](vehicle, (255,0,0,0))
        yaw = traci.vehicle[:getAngle](vehicle)
        vel_x = speed*cos(yaw*pi/180)
        vel_y = speed*sign(yaw*pi/180)
@@ -57,7 +62,11 @@ while step < 10000
       println(vehicle, ", ", step/10, ", ", vel_x, ", ", vel_y, ", ", yaw, ", ", numberOfLanesToMedian, ", ", numberOfLanesToCurb, ", ", headway, ", ", dist)
      end
    end
-   println(step)
+   if mod(step, 50) == 0
+     println(step)
+   end
    step += 1
  end
 traci.close()
+
+writetable("car_turning_data.csv", df)
