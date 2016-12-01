@@ -1,0 +1,8 @@
+<nodes>
+	<node id="top" x="0.0" y= "100.0" />
+	<node id="bottom" x="0.0" y="-100.0" />
+	<node id="left" x="-300.0" y="0.0" />
+	<node id="right" x="100.0" y="0.0" />
+	<node id="center" x="0.0" y="0.0" type="priority"/>
+
+</nodes>

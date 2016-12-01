@@ -1,0 +1,10 @@
+<edges>
+	<edge from="top" id="top_in" to="center" priority= "1" />
+	<edge from="center" id="top_out" to="top" priority= "1" />
+	<edge from="bottom" id="bottom_in" to="center" priority= "0" />
+	<edge from="center" id="bottom_out" to="bottom" priority= "1" />
+	<edge from="left" id="left_in" to="center" priority= "1" />
+	<edge from="center" id="left_out" to="left" priority= "1" />
+	<edge from="right" id="right_in" to="center" priority= "1" />
+	<edge from="center" id="right_out" to="right" priority= "1" />
+</edges>

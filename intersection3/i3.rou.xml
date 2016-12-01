@@ -1,0 +1,14 @@
+
+<routes>
+    <vType id="passenger" vClass="passenger"/>
+    <route id="left_up" edges="left_in top_out"/>
+    <route id="left_down" edges="left_in bottom_out"/>
+    <route id="left_right" edges="left_in right_out"/>
+    <route id="down_left" edges="bottom_in left_out"/>
+
+    <vehicle id="ego1" type="passenger" depart="0" color="1,0,0" route="down_left"/>
+    <flow id="1" begin="0" end="1000" probability = "0.05" route="left_up" type="passenger" />
+    <flow id="2" begin="0" end="1000" probability = "0.05" route="left_down" type="passenger" />
+    <flow id="3" begin="0" end="1000" probability = "0.05" route="left_right" type="passenger" />
+
+</routes>
