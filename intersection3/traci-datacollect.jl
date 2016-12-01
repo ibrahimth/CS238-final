@@ -51,7 +51,7 @@ while step < 10000
         numberOfLanesToCurb = NA
         numberOfLanesToMedian = NA
       end
-      push!(df, [vehicle, step/10, vel_x, vel_y, NA, NA, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, NA])
+      push!(df, [vehicle, step/5, vel_x, vel_y, NA, NA, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, NA])
       ##println(vehicle, ", ", step/10, ", ", vel_x, ", ", vel_y, ", ", yaw, ", ", numberOfLanesToMedian, ", ", numberOfLanesToCurb, ", ", headway, ", ", dist)
      end
    end
