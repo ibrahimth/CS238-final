@@ -235,3 +235,9 @@ def run():
     return
 
 run()
+
+#when you have a trajectory X, in shape (x, trajectory_len, num_features)
+#will output probability distribution over the moves
+def johnsfunction(X):
+    return getBelief(X)[-1]
+    
