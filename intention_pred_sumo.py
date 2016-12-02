@@ -29,6 +29,10 @@ from lib import LSTM
 import numpy as np
 import os
 import random
+import tensorflow as tf
+import tensorflow.contrib.learn as skflow
+import time
+
 
 #converters
 
@@ -139,12 +143,59 @@ def loadDataTrainSaveLSTM(csv_file="intersection3/refined_turning_data.csv"):
     print("Done training and saving LSTM")
     return
 
+def trainDNN(Xtrain, Ytrain, model="DNN"):
+    modeldir = os.getcwd() + os.sep + model + os.sep
+    check_make_paths([modeldir])
+    classifier = skflow.DNNClassifier(
+        feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(Xtrain),
+        hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
+    Ytrain = [int(i) for i in Ytrain]
+    start = time.clock()
+    max_epochs = 2
+    start2 = time.clock()
+    for epoch in range(max_epochs):
+        classifier.fit(Xtrain, Ytrain, steps=1000)
+        end2 = time.clock()
+        print("Epoch",epoch,"Done. Took:", end2-start2)
+        start2 = end2
+    end = time.clock()
+    timeFit = end - start
+    print("Done fitting, time spent:", timeFit)
+    print("Done saving the model")
+
+def testDNN(X, model="DNN"):
+    modeldir = os.getcwd() + os.sep + model + os.sep
+    classifier = skflow.DNNClassifier(hidden_units=[128, 128], model_dir=modeldir)
+    probs = classifier.predict_proba(X)
+    return probs
+
+
+def loadDataTrainSaveDNN(csv_file ="intersection3/refined_turning_data.csv"):
+    Xtrain, Ytrain = loadReformatCSV(csv_file)
+    print(Xtrain.shape)
+    print(Ytrain.shape)
+    Xtrain = Xtrain[:,-1,:]
+    Ytrain = Ytrain[:,-1,:]
+    print(Xtrain.shape)
+    print(Ytrain.shape)    
+    means, stddevs = normalize_get_params(Xtrain)
+    Xtrain = normalize(Xtrain, means, stddevs)
+    np.savetxt(csv_file[:-4]+"_norm_params.txt", np.array([means, stddevs]))
+    print("Done loading Xtrain and Ytrain")
+    trainDNN(Xtrain,Ytrain)
+
+
 #model_load_path should be: "abc/def/128x2.meta"
 #X of shape (numInputs=1(probably), traj_len, numFeatures)    
 def getBelief(X, filepath=None, model="LSTM_128x2"):
-    if filepath == None:
-        filepath = os.getcwd() + os.sep + model + os.sep + model[len("LSTM_"):]+".meta"
-    p_dists = LSTM.run_LSTM_testonnly(X, filepath, model)
+    if "LSTM" in model:
+        if filepath == None:
+            filepath = os.getcwd() + os.sep + model + os.sep + model[len("LSTM_"):]+".meta"
+        p_dists = LSTM.run_LSTM_testonnly(X, filepath, model)
+    else:
+        if filepath == None:
+            filepath = os.getcwd() + os.sep + model + os.sep
+        p_dists = testDNN(X)
     return p_dists #only care about the last one, but outputs a prob. distr
    
 def check_make_paths(paths):
@@ -203,6 +254,19 @@ def countWrong(p_dists, Y):
         n += 1
     return numWrong, n
 
+def countWrongLinear(p_dists, Y):
+    numWrong = 0
+    n = 0
+    Y.shape
+    Y = Y.flatten()
+    for traj_i in range(len(Y)):
+        if max(p_dists[traj_i]) != p_dists[traj_i,int(Y[traj_i])]:
+            numWrong += 1
+        n += 1
+    return numWrong, n
+
+
+
 def run():
     random.seed(42)
     #loadDataTrainSaveLSTM("refined_turning_data.csv")
@@ -213,31 +277,33 @@ def run():
     numWrong = 0
     n = 0
     Xtrain = normalize(Xtrain, mean, stdev)
-    p_dists = getBelief(Xtrain)
-    p_dists = p_dists.reshape(Y.shape[0], Y.shape[1], p_dists.shape[-1])
-    for ordering in [[0,1,2], [0,2,1], [1,0,2],[1,2,0],[2,1,0],[2,0,1]]:
+    p_dists = getBelief(Xtrain, model="DNN")
+    print(p_dists.shape)
+    #p_dists = p_dists.reshape((Y.shape[0], Y.shape[1], p_dists.shape[-1]))
+    '''for ordering in [[0,1,2], [0,2,1], [1,0,2],[1,2,0],[2,1,0],[2,0,1]]:
         print(ordering)
-        p = p_dists[:,:,ordering]
+        p = p_dists[:,ordering]
         print(p[0])
-        numWrong, n = countWrong(p, Y)
+        numWrong, n = countWrongLinear(p, Y)
         print(numWrong, "/", n, "== ", float(numWrong) / n)
-    '''for input_i in range(Xtrain.shape[0]):
+    '''
+    for input_i in range(Xtrain.shape[0]):
         X = Xtrain[input_i]
         X = X.reshape(1, X.shape[0], X.shape[1])
         X = normalize(X, mean, stdev)
-        pdist = getBelief(X)
+        pdist = getBelief(X, model="DNN")
         if pdist[int(Ytrain[input_i][-1][0])-1] != max(pdist):
             numWrong += 1
         n += 1
         if n % 100 == 0:
             print(numWrong, n)
-    '''
     return
-
-run()
 
 #when you have a trajectory X, in shape (1, trajectory_len, num_features)
 #will output probability distribution over the moves
 def johnsfunction(X):
     return getBelief(X)[-1]
+    
+loadDataTrainSaveDNN("refined_turning_data.csv")
+run()
     
