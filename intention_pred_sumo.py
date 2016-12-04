@@ -29,6 +29,10 @@ from lib import LSTM
 import numpy as np
 import os
 import random
+import tensorflow as tf
+import tensorflow.contrib.learn as skflow
+import time
+
 
 #converters
 
@@ -139,12 +143,101 @@ def loadDataTrainSaveLSTM(csv_file="intersection3/refined_turning_data.csv"):
     print("Done training and saving LSTM")
     return
 
+#give numpy arrays (X_1, X_2), (Y_1, 1)
+def input_fn(X,Y=None): # returns x, y (where y represents label's class index).
+    X_t = {"": tf.constant(X)}
+  #                for i in range(X.shape[1])}
+    if Y != None:
+        return X_t, tf.constant(Y)
+    return tf.constant(X)
+
+
+def trainDNN(Xtrain, Ytrain, model="DNN"):
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    modeldir = os.getcwd() + os.sep + model + os.sep
+    check_make_paths([modeldir])
+    classifier = skflow.DNNClassifier(
+        feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(Xtrain),
+        hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
+    #print(tf.contrib.learn.infer_real_valued_columns_from_input(Xtrain))
+    #return
+    #classifier.evaluate(input_fn=input_fn_eval)
+    #classifier.predict(x=x) # returns predicted labels (i.e. label's class index).
+    Ytrain = [int(i) for i in Ytrain]
+    start = time.clock()
+    #classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain))
+    max_epochs = 10
+    start2 = time.clock()
+    for epoch in range(max_epochs):
+        classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain),steps=1000)
+        loss = testDNN(Xtrain, classifier=classifier, Y=Ytrain)
+        end2 = time.clock()
+        print("Epoch",epoch,"Done. Took:", end2-start2, "loss of:", loss)
+        start2 = end2
+    end = time.clock()
+    timeFit = end - start
+    print("Done fitting, time spent:", timeFit)
+    print("Done saving the model")
+    testDNN(Xtrain, classifier=classifier, Y=Ytrain)
+
+
+
+def testDNN(X, model="DNN", classifier=None, Y=None):
+    modeldir = os.getcwd() + os.sep + model + os.sep
+    if classifier == None:
+      classifier = skflow.DNNClassifier(
+        feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(X),
+        hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
+    print("classifier created")
+    if Y != None:
+        ev = classifier.evaluate(input_fn=lambda: input_fn(X, Y), steps=1)
+        loss_score = ev["loss"]
+        print("Loss: {0:f}".format(loss_score))
+        return loss_score
+    probs = (classifier.predict_proba(X))#input_fn=lambda: input_fn(X)))
+    print("PROBS:", probs)
+    for i in probs:
+        print(i)
+    return probs
+
+def getXYDNN(csv_file="intersection3/refined_turning_data.csv"):
+    Xtrain, Ytrain = loadReformatCSV(csv_file)
+    print(Xtrain.shape)
+    print(Ytrain.shape)
+    Xtrain = Xtrain[:,-1,:]
+    Ytrain = Ytrain[:,-1,:]
+    print(Xtrain.shape)
+    print(Ytrain.shape)    
+    means, stddevs = normalize_get_params(Xtrain)
+    Xtrain = normalize(Xtrain, means, stddevs)
+    return Xtrain, Ytrain
+
+def loadDataTrainSaveDNN(csv_file ="intersection3/refined_turning_data.csv"):
+    Xtrain, Ytrain = loadReformatCSV(csv_file)
+    print(Xtrain.shape)
+    print(Ytrain.shape)
+    Xtrain = Xtrain[:,-1,:]
+    Ytrain = Ytrain[:,-1,:]
+    print(Xtrain.shape)
+    print(Ytrain.shape)    
+    means, stddevs = normalize_get_params(Xtrain)
+    Xtrain = normalize(Xtrain, means, stddevs)
+    np.savetxt(csv_file[:-4]+"_norm_params.txt", np.array([means, stddevs]))
+    print("Done loading Xtrain and Ytrain")
+    trainDNN(Xtrain,Ytrain)
+
+
 #model_load_path should be: "abc/def/128x2.meta"
 #X of shape (numInputs=1(probably), traj_len, numFeatures)    
 def getBelief(X, filepath=None, model="LSTM_128x2"):
-    if filepath == None:
-        filepath = os.getcwd() + os.sep + model + os.sep + model[len("LSTM_"):]+".meta"
-    p_dists = LSTM.run_LSTM_testonnly(X, filepath, model)
+    if "LSTM" in model:
+        if filepath == None:
+            filepath = os.getcwd() + os.sep + model + os.sep + model[len("LSTM_"):]+".meta"
+        p_dists = LSTM.run_LSTM_testonnly(X, filepath, model)
+    else:
+        if filepath == None:
+            filepath = os.getcwd() + os.sep + model + os.sep
+        p_dists = getBeliefDNN(X)
     return p_dists #only care about the last one, but outputs a prob. distr
    
 def check_make_paths(paths):
@@ -203,7 +296,66 @@ def countWrong(p_dists, Y):
         n += 1
     return numWrong, n
 
-def run():
+def countWrongLinear(p_dists, Y):
+    numWrong = 0
+    n = 0
+    Y = Y.flatten()
+    for traj_i in range(len(Y)):
+        if max(p_dists[traj_i]) != p_dists[traj_i][int(Y[traj_i])]:
+            numWrong += 1
+        n += 1
+    return numWrong, n
+
+def getBeliefDNN(X):
+    modeldir = os.getcwd() + os.sep + "DNN" + os.sep
+    check_make_paths([modeldir])
+    classifier = skflow.DNNClassifier(
+        feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(X),
+        hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
+    probs = classifier.predict_proba(X)
+    probs_list = [i for i in probs]
+    return probs_list
+
+def testJohnsDNNBelief():
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv")
+    numWrong = 0
+    n = 0
+    start = time.time()
+    for i in range(100):#len(Ytrain)):
+        X = Xtrain[i]
+        X = X.reshape((1, 9))
+        probs = getBeliefDNN(X)[0]
+        if i == 0:
+            print(probs)
+        if max(probs) != probs[int(Ytrain[i][0])]:
+            numWrong += 1
+        n += 1
+    end = time.time()
+    print(numWrong, "wrong /", n, "== accuracy of:", 1-(float(numWrong) / n))
+    print("scoring took:", end-start, "a time of :", (end-start)/n, "per example")
+
+def testAccuracyDNN():
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv")
+    DNNgetAccuracy(Xtrain, Ytrain)
+
+def DNNgetAccuracy(X, Y_for_score):
+    modeldir = os.getcwd() + os.sep + "DNN" + os.sep
+    check_make_paths([modeldir])
+    classifier = skflow.DNNClassifier(
+        feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(X),
+        hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
+    probs = classifier.predict_proba(X)
+    probs_list = [i for i in probs]
+    print(probs_list[0])
+    numWrong, n = countWrongLinear(probs_list, Y_for_score)
+    print(numWrong, "wrong /", n, "== accuracy of:", 1-(float(numWrong) / n))
+    return (1-float(numWrong) / n)
+
+
+
+def run(model="LSTM_128x2"):
     random.seed(42)
     #loadDataTrainSaveLSTM("refined_turning_data.csv")
     Xtrain, Ytrain = loadReformatCSV("refined_turning_data.csv")
@@ -213,31 +365,37 @@ def run():
     numWrong = 0
     n = 0
     Xtrain = normalize(Xtrain, mean, stdev)
-    p_dists = getBelief(Xtrain)
-    p_dists = p_dists.reshape(Y.shape[0], Y.shape[1], p_dists.shape[-1])
-    for ordering in [[0,1,2], [0,2,1], [1,0,2],[1,2,0],[2,1,0],[2,0,1]]:
+    p_dists = getBelief(Xtrain, model=model)
+    print(p_dists)
+    #p_dists = p_dists.reshape((Y.shape[0], Y.shape[1], p_dists.shape[-1]))
+    '''for ordering in [[0,1,2], [0,2,1], [1,0,2],[1,2,0],[2,1,0],[2,0,1]]:
         print(ordering)
-        p = p_dists[:,:,ordering]
+        p = p_dists[:,ordering]
         print(p[0])
-        numWrong, n = countWrong(p, Y)
+        numWrong, n = countWrongLinear(p, Y)
         print(numWrong, "/", n, "== ", float(numWrong) / n)
-    '''for input_i in range(Xtrain.shape[0]):
+    '''
+    for input_i in range(Xtrain.shape[0]):
         X = Xtrain[input_i]
         X = X.reshape(1, X.shape[0], X.shape[1])
         X = normalize(X, mean, stdev)
-        pdist = getBelief(X)
+        pdist = getBelief(X, model=model)
         if pdist[int(Ytrain[input_i][-1][0])-1] != max(pdist):
             numWrong += 1
         n += 1
         if n % 100 == 0:
             print(numWrong, n)
-    '''
     return
-
-run()
 
 #when you have a trajectory X, in shape (1, trajectory_len, num_features)
 #will output probability distribution over the moves
 def johnsfunction(X):
     return getBelief(X)[-1]
-    
+
+#pass in the current features only: shape (1, numfeatures=9)
+def johngetDNNbelief(X):
+    m, s = np.loadtxt('refined_turning_data_norm_params.txt')
+    X = normalize(X, m, s)
+    return getBeliefDNN(X)
+
+

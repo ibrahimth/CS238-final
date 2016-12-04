@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/Derek/Documents/Derek/Stanford/Research/REUDriver/DriverDataProcessing/LSTM_128x2/128x2"
+all_model_checkpoint_paths: "/Users/Derek/Documents/Derek/Stanford/Research/REUDriver/DriverDataProcessing/LSTM_128x2/128x2"
