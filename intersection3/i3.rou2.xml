@@ -1,8 +1,9 @@
+
 <routes>
-	<vType id="passenger" vClass="passenger"/>
     <route id="left_up" edges="left_in top_out"/>
     <route id="left_down" edges="left_in bottom_out"/>
     <route id="left_right" edges="left_in right_out"/>
     <route id="down_left" edges="bottom_in left_out"/>
-    <vehicle depart="1" id="veh0" route="left_up" type="passenger" />
+
+    <vehicle id="ego1" type="passenger" depart="0" color="1,0,0" route="down_left"/>
 </routes>

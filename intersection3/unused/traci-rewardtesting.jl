@@ -5,18 +5,19 @@ using DataFrames
 @pyimport traci
 @pyimport sumolib.net as sumonet
 
+df_t  = DataFrame(VID = String[], dist = Float64[], speed = Float64[])
+df_nt = DataFrame(VID = String[], dist = Float64[], speed = Float64[])
+
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
-
-n_tracked_cars = 2
-timestep = 0.1
-
+#TLS = net[:getTLSSecure](TLSID)
+#print(TLS[:getEdges]())
 
 for i = 1:100
   run(`build.bat >nul`)
   #traci.start(["sumo", "-c", "i3.sumocfg"], label="sim1")
   #traci.start(["sumo", "-c", "i3.sumocfg"], label="sim2")
-  traci.start(["sumo", "-c" , "i3.sumocfg"])
+  traci.start(["sumo-gui", "-c" , "i3.sumocfg"])
   #traci.switch("sim1")
   traci.simulationStep()
   traci.vehicle[:moveToXY]("ego1","bottom_in", 0, pos_i[1], pos_i[2] - 6, 1)
@@ -29,7 +30,6 @@ for i = 1:100
   last_step = 0
   go = 180
   oncoming_cars = Array(String,0)
-  end_dists = Array(Float64,n_tracked_cars,2)
   while true
      step += 1
      traci.simulationStep();
@@ -43,6 +43,7 @@ for i = 1:100
        if length(vehicles) < 2
          break;
        end
+       println(vehicles)
        dists = Float64[]
        for vehicle in vehicles
          if vehicle == "ego1"
@@ -52,27 +53,22 @@ for i = 1:100
          push!(dists, traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2]))
        end
        dists_sort = sort(dists)
-       for i = 1:n_tracked_cars
+       for i = 1:2
          push!(oncoming_cars, vehicles[find(x -> x == dists_sort[i],dists)][1])
        end
+       println(oncoming_cars)
        traci.vehicle[:slowDown]("ego1", 20, 5000);
+
      else
        traci.vehicle[:slowDown]("ego1", 20, 5000);
-       #check for colision
-
-
-
-
-
+       for vehicle in oncoming_cars
+         pos = traci.vehicle[:getPosition](vehicle)
+         dist_v = traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2])
+         push!(df_t, [vehicle, dist_v, traci.vehicle[:getSpeed](vehicle)])
+         #println([vehicle, dist_v, traci.vehicle[:getSpeed](vehicle)])
+       end
      end
      if dist > 25
-       i = 0
-       for vehicle in oncoming_cars
-         println(typeof(vehicle))
-         i += 1
-         pos = traci.vehicle[:getPosition](vehicle)
-         end_dists[i,1] = dist = traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2])
-       end
        last_step = step
        break
      end
@@ -92,14 +88,30 @@ for i = 1:100
     pos_ego = traci.vehicle[:getPosition]("ego1")
     dist = traci.simulation[:getDistance2D](pos_ego[1], pos_ego[2], pos_i[1], pos_i[2])
     traci.vehicle[:slowDown]("ego1", 0, 100);
+    if step == go
+      vehicles = traci.vehicle[:getIDList]()
+      println(vehicles)
+    elseif step > go
+      for vehicle in oncoming_cars
+
+        pos = traci.vehicle[:getPosition](vehicle)
+        dist_v = traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2])
+        push!(df_nt, [vehicle, dist_v, traci.vehicle[:getSpeed](vehicle)])
+        #println([vehicle, dist_v, traci.vehicle[:getSpeed](vehicle)])
+      end
+    end
   end
-  i = 0
-  for vehicle in oncoming_cars
-    i += 1
-    pos = traci.vehicle[:getPosition](vehicle)
-    end_dists[i,2] = dist = traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2])
-  end
-  traci.close()
-  reward = -10 * sum(abs(end_dists[:,2] - end_dists[:,1]))
-  println(reward)
+ traci.close()
+ #writetable("turn.csv", df_turn)
+ #writetable("noturn.csv", df_noturn)
+ reward = 0
+ for car in unique(convert(Array,df_nt[:VID]))
+   df_t_s = df_t[find(x -> x == car, df_t[:VID]), :]
+   df_nt_s = df_nt[find(x -> x == car, df_nt[:VID]), :]
+   diffs = abs(df_nt_s[:dist] - df_t_s[:dist])
+   diff = diffs[length(diffs)]
+   #println(diff)
+   reward -= 10*diff
+ end
+ println(reward)
 end

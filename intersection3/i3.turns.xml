@@ -1,0 +1,12 @@
+<turns>
+   <interval begin="0" end="40">
+      <fromEdge id="left_in">
+         <toEdge id="bottom_out" probability="0.3"/>
+         <toEdge id="top_out" probability="0.3"/>
+         <toEdge id="right_out" probability="0.4"/>
+      </fromEdge>
+   </interval>
+   <sink edges="bottom_out top_out right_out left_out" />
+
+   
+</turns>

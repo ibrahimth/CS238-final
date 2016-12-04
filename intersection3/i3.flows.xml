@@ -1,0 +1,6 @@
+<flows>
+    <vType id="passenger" vClass="passenger"/>
+
+    <flow id="0" from="left_in" begin="0" end="50" departSpeed="max" probability = "0.3" type="passenger" />
+
+</flows>

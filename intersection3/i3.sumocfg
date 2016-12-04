@@ -1,7 +1,7 @@
 <configuration>
     <input>
         <net-file value="i3.net.xml"/>
-        <route-files value="i3.rou.xml"/>
+        <route-files value="i3.rou.xml i3.rou2.xml"/>
         <gui-settings-file value="i3.settings.xml"/>
     </input>
 
