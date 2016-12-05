@@ -4,6 +4,7 @@ using DataFrames
 
 @pyimport traci
 @pyimport sumolib.net as sumonet
+@pyimport intention_pred_sumo as intent
 
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
@@ -27,12 +28,16 @@ end
 
 #separate function for ease of editting, not sure if headway (getLeader) is right
 function get_state(vehicleid, dist_to_inter)
-     headway = traci.vehicle[:getLeader](vehicleid,100)
-     if typeof(headway) != Void
-         headway = headway[2]
-     else
-         headway = 1000.0
-     end
+    headway = traci.vehicle[:getLeader](vehicleid,100)
+    if typeof(headway) != Void
+        headway = headway[2]
+    else
+        headway = 1000.0
+    end
+    #features = get_features(vehicleid,pos_i)
+    #println(features)
+    #intention_pred = intent.johngetDNNbelief(features)
+    #println(intention_pred)
     return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000] #rearwaydefault=100 
 end
 
@@ -67,6 +72,35 @@ function get_tracked_cars_state(vehicles, dists, dists_sort; n=1, tti_min=1.7)
     return state
 end
 
+function get_features(vehicle, pos_i)
+    pos = traci.vehicle[:getPosition](vehicle)
+    dist = convert(Float64,traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2]))
+    speed = convert(Float64,traci.vehicle[:getSpeed](vehicle))
+    yaw = convert(Float64,traci.vehicle[:getAngle](vehicle))
+    vel_x = convert(Float64,speed*cos(yaw*pi/180))
+    vel_y = convert(Float64,speed*sign(yaw*pi/180))
+    headway = traci.vehicle[:getLeader](vehicle,100)
+    if typeof(headway) != Void
+        headway = convert(Float64,headway[2])
+    else
+        headway = NA
+    end
+    laneID = traci.vehicle[:getLaneID](vehicle)
+    edgeID = traci.lane[:getEdgeID](laneID)
+    if edgeID[1] != ':'
+        edge = net[:getEdge](edgeID)
+        n_lanes = edge[:getLaneNumber]()
+        laneInd = traci.vehicle[:getLaneIndex](vehicle)
+        numberOfLanesToMedian = convert(Float64,n_lanes - 1 - laneInd)
+        numberOfLanesToCurb = convert(Float64,laneInd)
+    else
+        numberOfLanesToCurb = NA
+        numberOfLanesToMedian = NA
+    end
+    #here features should be vid fid vx vy ax ay lanesMed, lanesCurb, yaw, hdwy, dist move
+    #in python after reordering feautres should be lanesMed, lanesCub, Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move
+    return [vehicle, 0, vel_x, vel_y, NA, NA, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, NA]
+end
 
 df_array = Array(DataFrame,0)
 for i = 1:100
@@ -97,7 +131,7 @@ for i = 1:100
     vehicles = traci.vehicle[:getIDList]()
     dists, dists_sort = get_sorted_distances(vehicles, pos_i)
     reward_dists_sort = deepcopy(dists_sort)
-    state = get_tracked_cars_state(vehicles, dists, dists_sort, n=n_tracked_cars)
+    states = get_tracked_cars_state(vehicles, dists, dists_sort, n=n_tracked_cars)
     #state to pass will be first row
     #println(state)
     #if length(state) > 0

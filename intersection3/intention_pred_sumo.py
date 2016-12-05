@@ -48,6 +48,10 @@ def convertYaw(yaw):
     return float(yaw)
     
 def convertLane(lanes):
+    print(lanes)
+    print(type(lanes))
+    if type(lanes) == 'PyCall.jlwrap':
+        return -1
     try:
         return int(lanes)
     except:
@@ -266,7 +270,14 @@ def unnormalize(x, mean, stddev):
     return (x * stddev) + mean
     
 def normalize(X, means, stddevs):
-    return (X-means)/stddevs   
+    try:
+        return (X-means)/stddevs   
+    except:
+        for col in range(X.shape[1]):
+            for row in range(X.shape[0]):
+                X[row,col] = float(X[row,col])-means[col]
+        return X / stddevs
+        
 
 def load_model_params(X, model_load_path=None, model="LSTM_128x2"): #Xtrain for sizing
     traj_len = X.shape[1]
@@ -410,6 +421,9 @@ def johngetDNNbelief(X):
     X = convertInput(X)
     X = X[:,new_ordering]
     X = X[:,:9]
+    print(X)
+    print(type(X))
+    X = np.array(X, dtype=float)
     m, s = np.loadtxt('refined_turning_data_norm_params.txt')
     X = normalize(X, m, s)
     return getBeliefDNN(X)
