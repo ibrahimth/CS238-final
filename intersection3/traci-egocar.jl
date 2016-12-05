@@ -51,7 +51,22 @@ for i = 1:100
       end
       dists_sort = sort(dists)
       for i = 1:n_tracked_cars
-        push!(oncoming_cars, vehicles[find(x -> x == dists_sort[i],dists)][1])
+        #find the next closest car
+        car_found = false
+        car_to_add = "ego1"
+        while car_found == false && length(dists_sort) > 0
+            next_closest = vehicles[find(x -> x == dists_sort[1], dists)][1]
+            tti = dists_sort[1] / traci.vehicle[:getSpeed](next_closest) 
+            dists_sort = deleteat!(dists_sort, 1)
+            if tti > 1.7
+                car_found = true
+                car_to_add = next_closest
+                println(car_to_add)
+            end
+        end
+        if car_to_add != "ego1"
+            push!(oncoming_cars, car_to_add)#vehicles[find(x -> x == dists_sort[i],dists)][1])
+        end
       end
     else
       traci.vehicle[:slowDown]("ego1", 20, 5000);
