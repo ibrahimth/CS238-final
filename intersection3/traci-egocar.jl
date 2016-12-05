@@ -13,7 +13,11 @@ timestep = 0.1
 
 df_array = Array(DataFrame,0)
 for i = 1:100
-  run(`build.bat >nul`)
+  try
+    run(`build.bat >nul`)
+  catch
+    run(`./build.bat`)
+  end
   traci.start(["sumo-gui", "-c" , "i3.sumocfg"])
   traci.simulationStep()
   traci.vehicle[:moveToXY]("ego1","bottom_in", 0, pos_i[1], pos_i[2] - 6, 1)
