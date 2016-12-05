@@ -11,6 +11,55 @@ pos_i = net[:getNode]("center")[:getCoord]()
 n_tracked_cars = 2
 timestep = 0.1
 
+#returns the sorted distances of for the vehicles
+function get_sorted_distances(vehicles, pos_i; ego = "ego1")
+    dists = Float64[]
+    for vehicle in vehicles
+        if vehicle == "ego1"
+            continue
+        end
+        pos = traci.vehicle[:getPosition](vehicle)
+        push!(dists, traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2]))
+    end
+    dists_sort = sort(dists)
+    return dists, dists_sort
+end
+
+#separate function for ease of editting, not sure if headway (getLeader) is right
+function get_state(vehicleid, dist_to_inter)
+     headway = traci.vehicle[:getLeader](vehicleid,100)
+     if typeof(headway) != Void
+         headway = headway[2]
+     else
+         headway = 1000.0
+     end
+    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway] 
+end
+
+#given the list of vehicles and their sorted distances, returns first n vehicles with time to intersection > 1.7
+function get_tracked_cars_state(vehicles, dists, dists_sort; n=1, tti_min=1.7)
+    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[])
+    for i = 1:n_tracked_cars
+        #find the next closest car
+        car_to_add = ""
+        this_dist = 0
+        while car_to_add == "" && length(dists_sort) > 0
+            next_closest = vehicles[find(x -> x == dists_sort[1], dists)][1]
+            this_dist = dists_sort[1]
+            tti = this_dist / traci.vehicle[:getSpeed](next_closest) 
+            dists_sort = deleteat!(dists_sort, 1)
+            if tti > tti_min
+                car_to_add = next_closest
+            end
+        end
+        if car_to_add != ""
+            push!(state, get_state(car_to_add, this_dist))#vehicles[find(x -> x == dists_sort[i],dists)][1])
+        end
+    end
+    return state
+end
+
+
 df_array = Array(DataFrame,0)
 for i = 1:100
   try
@@ -35,38 +84,18 @@ for i = 1:100
     traci.simulationStep();
     pos_ego = traci.vehicle[:getPosition]("ego1")
     dist = traci.simulation[:getDistance2D](pos_ego[1], pos_ego[2], pos_i[1], pos_i[2])
-
+    
+    vehicles = traci.vehicle[:getIDList]()
+    dists, dists_sort = get_sorted_distances(vehicles, pos_i)
+    reward_dists_sort = deepcopy(dists_sort)
+    state = get_tracked_cars_state(vehicles, dists, dists_sort, n=n_tracked_cars)
+    println(state)
     if step < go
       traci.vehicle[:slowDown]("ego1", 0, 100);
     elseif step == go
       traci.vehicle[:slowDown]("ego1", 20, 5000);
-      vehicles = traci.vehicle[:getIDList]()
-      dists = Float64[]
-      for vehicle in vehicles
-        if vehicle == "ego1"
-          continue
-        end
-        pos = traci.vehicle[:getPosition](vehicle)
-        push!(dists, traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2]))
-      end
-      dists_sort = sort(dists)
       for i = 1:n_tracked_cars
-        #find the next closest car
-        car_found = false
-        car_to_add = "ego1"
-        while car_found == false && length(dists_sort) > 0
-            next_closest = vehicles[find(x -> x == dists_sort[1], dists)][1]
-            tti = dists_sort[1] / traci.vehicle[:getSpeed](next_closest) 
-            dists_sort = deleteat!(dists_sort, 1)
-            if tti > 1.7
-                car_found = true
-                car_to_add = next_closest
-                println(car_to_add)
-            end
-        end
-        if car_to_add != "ego1"
-            push!(oncoming_cars, car_to_add)#vehicles[find(x -> x == dists_sort[i],dists)][1])
-        end
+        push!(oncoming_cars, vehicles[find(x -> x == reward_dists_sort[i],dists)][1])
       end
     else
       traci.vehicle[:slowDown]("ego1", 20, 5000);
