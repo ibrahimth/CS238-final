@@ -337,7 +337,7 @@ def testJohnsDNNBelief():
 
 def testAccuracyDNN():
     tf.logging.set_verbosity(tf.logging.ERROR)
-    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv")
+    Xtrain, Ytrain = getXYDNN()#"refined_turning_data.csv")
     DNNgetAccuracy(Xtrain, Ytrain)
 
 def DNNgetAccuracy(X, Y_for_score):
