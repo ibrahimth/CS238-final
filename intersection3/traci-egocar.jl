@@ -33,12 +33,19 @@ function get_state(vehicleid, dist_to_inter)
      else
          headway = 1000.0
      end
-    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway] 
+    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000] #rearwaydefault=100 
+end
+
+function append_rearway(state)
+    nrows, _ = size(state)
+    for row_i in 1:nrows-1
+        state[row_i,:rearway] = state[row_i+1,:headway]
+    end
 end
 
 #given the list of vehicles and their sorted distances, returns first n vehicles with time to intersection > 1.7
 function get_tracked_cars_state(vehicles, dists, dists_sort; n=1, tti_min=1.7)
-    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[])
+    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[])
     for i = 1:n_tracked_cars
         #find the next closest car
         car_to_add = ""
@@ -56,6 +63,7 @@ function get_tracked_cars_state(vehicles, dists, dists_sort; n=1, tti_min=1.7)
             push!(state, get_state(car_to_add, this_dist))#vehicles[find(x -> x == dists_sort[i],dists)][1])
         end
     end
+    append_rearway(state)
     return state
 end
 
@@ -89,7 +97,11 @@ for i = 1:100
     dists, dists_sort = get_sorted_distances(vehicles, pos_i)
     reward_dists_sort = deepcopy(dists_sort)
     state = get_tracked_cars_state(vehicles, dists, dists_sort, n=n_tracked_cars)
-    println(state)
+    #state to pass will be first row
+    #println(state)
+    #if length(state) > 0
+    #    println(state[1,:])
+    #end
     if step < go
       traci.vehicle[:slowDown]("ego1", 0, 100);
     elseif step == go
