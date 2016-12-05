@@ -32,8 +32,10 @@ for i = 1:100
     pos_ego = traci.vehicle[:getPosition]("ego1")
     dist = traci.simulation[:getDistance2D](pos_ego[1], pos_ego[2], pos_i[1], pos_i[2])
 
-    # at step 130, it finds the closes cars and starts gathering data on them
-    if step == 130
+    if step < go
+      traci.vehicle[:slowDown]("ego1", 0, 100);
+    elseif step == go
+      traci.vehicle[:slowDown]("ego1", 20, 5000);
       vehicles = traci.vehicle[:getIDList]()
       dists = Float64[]
       for vehicle in vehicles
@@ -47,14 +49,6 @@ for i = 1:100
       for i = 1:n_tracked_cars
         push!(oncoming_cars, vehicles[find(x -> x == dists_sort[i],dists)][1])
       end
-    end
-
-
-
-    if step < go
-      traci.vehicle[:slowDown]("ego1", 0, 100);
-    elseif step == go
-      traci.vehicle[:slowDown]("ego1", 20, 5000);
     else
       traci.vehicle[:slowDown]("ego1", 20, 5000);
       #check for colision
