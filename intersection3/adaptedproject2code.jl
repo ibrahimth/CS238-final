@@ -28,12 +28,10 @@ function final_proj_q(data; state_range = 1)
     learning_rate = 0.1
     discount = 1.0
     Q = qlearning(data, discount, learning_rate, states, actions)
-    if state_range > 1
-        Q = interpolate_v_valued(Q, n, state_range, actions)
-    end
     new_actions = [1,2]
-    policy = find_policy_from_values(Q, states, new_actions, n; default=4)
-    writecsv("./medium_q.policy", policy)
+    policy = find_policy_from_values(Q, states, new_actions, n; default=20) #includes nearest neighbor
+    policy -= 1
+    writecsv("./final_q.policy", policy)
 end
 
 function prioruninformed_T()
@@ -470,13 +468,15 @@ end
 function qlearning(data, γ::Float64, α::Float64, states, actions; batch::Int=10000)
     Q, N = initializeQN(data, length(states), length(actions))
     t::Int = 0
-    num_iters::Int = 1200
+    num_iters::Int = 120000
     prev_mean_Q::Float64 = 0.0
     num_rows::Int = nrow(data)
     this_mean = 0.0
     tolerance = 1e-30
     while t < num_iters
-        println("Iteration: ", t, " Q_mean: ", prev_mean_Q)
+        if t % 100 == 0
+            println("Iteration: ", t, " Q_mean: ", prev_mean_Q)
+        end
         for row in eachrow(data)
             #a = row[:a] + 1 #cant be 0
             if row[:sp] > 0
@@ -485,12 +485,12 @@ function qlearning(data, γ::Float64, α::Float64, states, actions; batch::Int=1
                 Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 + 0)
             end
         end
-        t += 1
         this_mean::Float64 = mean(Q)
         if abs(this_mean - prev_mean_Q) < tolerance
             break
         end
         prev_mean_Q = this_mean
+        t += 1
     end
     Q
 end

@@ -183,7 +183,8 @@ function convertDiscreteState(state)
   rear_d = encode(disc_r, round(rear))
   p1_d = encode(disc_p, p1)
   p2_d = encode(disc_p, p2)
-  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
+  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_p), nlabels(disc_p))
+  #sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
   state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d, p1_d, p2_d)
   return state, sub_dims
 end
