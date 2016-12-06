@@ -27,18 +27,20 @@ function get_sorted_distances(vehicles, pos_i; ego = "ego1")
 end
 
 #separate function for ease of editting, not sure if headway (getLeader) is right
-function get_state(vehicleid, dist_to_inter)
+function get_state(vehicleid, dist_to_inter, prev_v; classifier=nothing, dt=0.1)
     headway = traci.vehicle[:getLeader](vehicleid,100)
     if typeof(headway) != Void
         headway = headway[2]
     else
         headway = 1000.0
     end
-    features = get_features(vehicleid,pos_i)
-    println(features)
-    intention_pred = intent.johngetDNNbelief(features)
-    println(intention_pred)
-    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000] #rearwaydefault=100 
+    features = get_features(vehicleid, pos_i, prev_v, dt=dt)
+    if classifier != nothing
+        intention_pred = intent.johngetDNNbelief(features, classifier)[1]
+    else
+        intention_pred = intent.johngetDNNbelief(features)[1]
+    end
+    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000, intention_pred[1], intention_pred[2]] #rearwaydefault=100 
 end
 
 function append_rearway(state)
@@ -49,8 +51,8 @@ function append_rearway(state)
 end
 
 #given the list of vehicles and their sorted distances, returns first n vehicles with time to intersection > 1.7
-function get_tracked_cars_state(vehicles, dists, dists_sort; n=1, tti_min=1.7)
-    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[])
+function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict; n=1, tti_min=1.7, classifier = nothing)
+    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
     for i = 1:n_tracked_cars
         #find the next closest car
         car_to_add = ""
@@ -65,20 +67,23 @@ function get_tracked_cars_state(vehicles, dists, dists_sort; n=1, tti_min=1.7)
             end
         end
         if car_to_add != ""
-            push!(state, get_state(car_to_add, this_dist))#vehicles[find(x -> x == dists_sort[i],dists)][1])
+            prev_v = get(v_dict, car_to_add, (0,0))
+            push!(state, get_state(car_to_add, this_dist, prev_v, classifier = classifier))#vehicles[find(x -> x == dists_sort[i],dists)][1])
         end
     end
     append_rearway(state)
     return state
 end
 
-function get_features(vehicle, pos_i)
+function get_features(vehicle, pos_i, prev_v,; dt=0.1)
     pos = traci.vehicle[:getPosition](vehicle)
     dist = convert(Float64,traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2]))
     speed = convert(Float64,traci.vehicle[:getSpeed](vehicle))
     yaw = convert(Float64,traci.vehicle[:getAngle](vehicle))
     vel_x = convert(Float64,speed*cos(yaw*pi/180))
     vel_y = convert(Float64,speed*sign(yaw*pi/180))
+    Ax = (vel_x - prev_v[1]) / dt
+    Ay = (vel_y - prev_v[2]) / dt
     headway = traci.vehicle[:getLeader](vehicle,100)
     if typeof(headway) != Void
         headway = convert(Float64,headway[2])
@@ -99,10 +104,11 @@ function get_features(vehicle, pos_i)
     end
     #here features should be vid fid vx vy ax ay lanesMed, lanesCurb, yaw, hdwy, dist move
     #in python after reordering feautres should be lanesMed, lanesCub, Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move
-    return [vehicle, 0, vel_x, vel_y, "0", "0", yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, 0]
+    return [vehicle, 0, vel_x, vel_y, Ax, Ay, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, 0]
 end
 
 df_array = Array(DataFrame,0)
+classifier = intent.loadDNNonly()
 for i = 1:100
   try
     run(`build.bat >nul`)
@@ -121,6 +127,7 @@ for i = 1:100
   oncoming_cars = Array(String,0)
   end_dists = Array(Float64,n_tracked_cars,2)
   df = DataFrame(dist = Float64[], speed = Float64[], headway = Float64[])
+  v_dict = Dict() #to keep track of prev velocities to calculate acceleration
   while true
 
     step += 1
@@ -131,12 +138,15 @@ for i = 1:100
     vehicles = traci.vehicle[:getIDList]()
     dists, dists_sort = get_sorted_distances(vehicles, pos_i)
     reward_dists_sort = deepcopy(dists_sort)
-    states = get_tracked_cars_state(vehicles, dists, dists_sort, n=n_tracked_cars)
-    #state to pass will be first row
-    #println(state)
-    #if length(state) > 0
-    #    println(state[1,:])
-    #end
+    states = get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, n=n_tracked_cars, classifier = classifier)
+    for vehicleid in vehicles
+        yaw = traci.vehicle[:getAngle](vehicleid)
+        speed = traci.vehicle[:getSpeed](vehicleid)
+        vel_x = speed*cos(yaw*pi/180)
+        vel_y = speed*sign(yaw*pi/180)
+        v_dict[vehicleid] = (vel_x, vel_y)
+    end
+    println(states)
     if step < go
       traci.vehicle[:slowDown]("ego1", 0, 100);
     elseif step == go

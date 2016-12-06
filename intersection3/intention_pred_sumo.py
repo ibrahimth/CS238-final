@@ -314,7 +314,7 @@ def countWrongLinear(p_dists, Y):
         n += 1
     return numWrong, n
 
-def loadDNNonl(modeldir=os.getcwd()+os.sep+"DNN"+os.sep):
+def loadDNNonly(modeldir=os.getcwd()+os.sep+"DNN"+os.sep):
     tf.logging.set_verbosity(tf.logging.ERROR)
     X, Ytrain = getXYDNN("refined_turning_data.csv")
     classifier = skflow.DNNClassifier(
