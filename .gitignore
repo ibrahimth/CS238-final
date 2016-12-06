@@ -2,3 +2,5 @@
 .DS_Store
 */i3.net.xml
 *.swp
+*.pyc
+*/.pyc
