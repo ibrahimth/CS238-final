@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<<<<<<< HEAD
 <!-- generated on Tue Dec  6 00:14:06 2016 by SUMO jtrrouter Version 0.28.0
+=======
+<!-- generated on 12/06/16 07:08:34 by SUMO jtrrouter Version 0.28.0
+>>>>>>> 37654c10bf39805f265eea3c3382f4c4e3b13011
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/jtrrouterConfiguration.xsd">
@@ -29,6 +33,7 @@
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
     <vType id="passenger" vClass="passenger"/>
+<<<<<<< HEAD
     <vehicle id="0.0" type="passenger" depart="3.00" departSpeed="max">
         <route edges="left_in top_out"/>
     </vehicle>
@@ -3865,6 +3870,46 @@
     </vehicle>
     <vehicle id="0.1278" type="passenger" depart="4194.00" departSpeed="max">
         <route edges="left_in bottom_out"/>
+=======
+    <vehicle id="0.0" type="passenger" depart="1.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.1" type="passenger" depart="5.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.2" type="passenger" depart="7.00" departSpeed="max">
+        <route edges="left_in bottom_out"/>
+    </vehicle>
+    <vehicle id="0.3" type="passenger" depart="8.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.4" type="passenger" depart="10.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.5" type="passenger" depart="12.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+    </vehicle>
+    <vehicle id="0.6" type="passenger" depart="19.00" departSpeed="max">
+        <route edges="left_in bottom_out"/>
+    </vehicle>
+    <vehicle id="0.7" type="passenger" depart="26.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.8" type="passenger" depart="31.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+    </vehicle>
+    <vehicle id="0.9" type="passenger" depart="32.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.10" type="passenger" depart="34.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.11" type="passenger" depart="35.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.12" type="passenger" depart="37.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+>>>>>>> 37654c10bf39805f265eea3c3382f4c4e3b13011
     </vehicle>
     <vehicle id="0.1279" type="passenger" depart="4195.00" departSpeed="max">
         <route edges="left_in right_out"/>
