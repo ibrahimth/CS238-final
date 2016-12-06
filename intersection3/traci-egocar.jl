@@ -35,7 +35,7 @@ function get_state(vehicleid, dist_to_inter, prev_v, intent_p; classifier=nothin
         headway = 1000.0
     end
     features = get_features(vehicleid, pos_i, prev_v, dt=dt)
-    if intent_p == nothing
+    if intent_p == nothing && false #did this for sim so inent pred not done
       if classifier != nothing
         intention_pred = intent.johngetDNNbelief(features, classifier)[1]
       else
@@ -44,7 +44,7 @@ function get_state(vehicleid, dist_to_inter, prev_v, intent_p; classifier=nothin
     else
       intention_pred = intent_p
     end
-    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000, intention_pred[1], intention_pred[2]] #rearwaydefault=100 
+    return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000, 0.0,0.0], features #intention_pred[1], intention_pred[2]], features #rearwaydefault=100 
 end
 
 function append_rearway(state)
@@ -57,6 +57,7 @@ end
 #given the list of vehicles and their sorted distances, returns first n vehicles with time to intersection > 1.7
 function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, redo_i; n=1, tti_min=1.7, classifier = nothing)
     state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
+    features_df = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
     for i = 1:n_tracked_cars
         #find the next closest car
         car_to_add = ""
@@ -77,13 +78,14 @@ function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, red
             else
                 intent_p = get(i_dict, car_to_add, nothing)
             end
-            new_state = get_state(car_to_add, this_dist, prev_v, intent_p, classifier = classifier, dt= timestep)
+            new_state, features = get_state(car_to_add, this_dist, prev_v, intent_p, classifier = classifier, dt= timestep)
             push!(state, new_state)
+            push!(features_df, features)
             i_dict[car_to_add] = (new_state[5], new_state[6])
         end
     end
     append_rearway(state)
-    return state
+    return state, features_df
 end
 
 function get_features(vehicle, pos_i, prev_v,; dt=0.1)
@@ -99,7 +101,7 @@ function get_features(vehicle, pos_i, prev_v,; dt=0.1)
     if typeof(headway) != Void
         headway = convert(Float64,headway[2])
     else
-        headway = "NA"
+        headway = 1000.0
     end
     laneID = traci.vehicle[:getLaneID](vehicle)
     edgeID = traci.lane[:getEdgeID](laneID)
@@ -110,8 +112,8 @@ function get_features(vehicle, pos_i, prev_v,; dt=0.1)
         numberOfLanesToMedian = convert(Float64,n_lanes - 1 - laneInd)
         numberOfLanesToCurb = convert(Float64,laneInd)
     else
-        numberOfLanesToCurb = "NA"
-        numberOfLanesToMedian = "NA"
+        numberOfLanesToCurb = -1.0
+        numberOfLanesToMedian = -1.0
     end
     #here features should be vid fid vx vy ax ay lanesMed, lanesCurb, yaw, hdwy, dist move
     #in python after reordering feautres should be lanesMed, lanesCub, Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move
@@ -120,6 +122,9 @@ end
 
 df_array = Array(DataFrame,0)
 classifier = intent.loadDNNonly()
+all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
+
+all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
 for i = 1:100
   try
     run(`build.bat >nul`)
@@ -151,7 +156,9 @@ for i = 1:100
     dists, dists_sort = get_sorted_distances(vehicles, pos_i)
     reward_dists_sort = deepcopy(dists_sort)
     recalc_intents = step % 5 == 0
-    states = get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, recalc_intents, n=n_tracked_cars, classifier = classifier)
+    states, features = get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, recalc_intents, n=n_tracked_cars, classifier = classifier)
+    all_states = [all_states; states]
+    all_features = [all_features;features]
     for vehicleid in vehicles
         yaw = traci.vehicle[:getAngle](vehicleid)
         speed = traci.vehicle[:getSpeed](vehicleid)
@@ -226,4 +233,7 @@ for i = 1:100
     reward = -10 * sum(abs(end_dists[:,2] - end_dists[:,1]))
   end
   println(reward)
+  #somehow append reward to the states
+  writetable("simulated_states.csv", all_states)
+  writetable("simulated_corresponding_features.csv",all_features)
 end

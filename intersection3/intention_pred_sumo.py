@@ -77,10 +77,11 @@ def loadReformatCSV(csv_file="intersection3/refined_turning_data.csv"):
                           8:convertLane, 9:convertHdwy, 11:convertMove})
     #new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
     new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
-    data = data[::2,new_ordering]
+    data = data[:,new_ordering]
     #data should be: (doesnt actually matter too much, but might as well)
         #[lanesToMedian, lanesToCurb,Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move] 
     #features will be shape (numInputs, trajectory_len, numFeatures)
+    np.random.shuffle(data) #to make IID
     traj_len = 10 #at .2s timesteps = 2 seconds trajectory info
     num_features = 9
     vidToFramesToFeatures = {}
@@ -167,10 +168,10 @@ def trainDNN(Xtrain, Ytrain, model="DNN"):
     Ytrain = [int(i) for i in Ytrain]
     start = time.clock()
     #classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain))
-    max_epochs = 10
+    max_epochs = 15
     start2 = time.clock()
     for epoch in range(max_epochs):
-        classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain),steps=1000)
+        classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain),steps=3000)
         loss = testDNN(Xtrain, classifier=classifier, Y=Ytrain)
         end2 = time.clock()
         print("Epoch",epoch,"Done. Took:", end2-start2, "loss of:", loss)
@@ -205,8 +206,8 @@ def getXYDNN(csv_file="intersection3/refined_turning_data.csv"):
     Xtrain, Ytrain = loadReformatCSV(csv_file)
     print(Xtrain.shape)
     print(Ytrain.shape)
-    Xtrain = Xtrain[:,-1,:]
-    Ytrain = Ytrain[:,-1,:]
+    Xtrain = Xtrain.reshape((Xtrain.shape[0]*Xtrain.shape[1], Xtrain.shape[2]))
+    Ytrain = Ytrain.reshape((Ytrain.shape[0]*Ytrain.shape[1], Ytrain.shape[2]))
     print(Xtrain.shape)
     print(Ytrain.shape)    
     means, stddevs = normalize_get_params(Xtrain)

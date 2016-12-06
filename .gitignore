@@ -4,3 +4,6 @@
 *.swp
 *.pyc
 */.pyc
+*/*events.out.tfevents*
+*/DNN/eval/*
+*/DNN/events*

@@ -11,7 +11,12 @@ df = DataFrame(VID = String[], TimeStep = Float64[], vel_x = Float64[], vel_y = 
   numberOfLanesToCurb = Int64[], headway = Float64[], distanceToIntersection = Float64[],
   turn = String[])
 
-
+#BUILD FOR DATA IS SET TO 4200 TIME STEPS, CHANGE SIM LENGTH THERE
+try
+  run(`build_for_data.bat >nul`)
+catch
+  run(`./build_for_data.bat`) #for max
+end
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
@@ -21,7 +26,7 @@ traci.start(sumoCmd)
 traci.simulationStep();
 traci.vehicle[:remove]("ego1")
 step = 0
-while step < 10000
+while step < 42000 #this should be end in .bat / time_step
    traci.simulationStep();
    vehicles = traci.vehicle[:getIDList]()
    for vehicle in vehicles
