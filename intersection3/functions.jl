@@ -43,7 +43,7 @@ end
 
 #given the list of vehicles and their sorted distances, returns first n vehicles with time to intersection > 1.7
 function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, redo_i; n=1, tti_min=1.7, classifier = nothing)
-    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[], car_order = Int64[])
+    state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
     features_df = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
     for i = 1:n_tracked_cars
         #find the next closest car
@@ -66,7 +66,7 @@ function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, red
                 intent_p = get(i_dict, car_to_add, nothing)
             end
             new_state, features = get_state(car_to_add, this_dist, prev_v, intent_p, classifier = classifier, dt= timestep)
-            push!(new_state, i)
+            #push!(new_state, i) #when doing by order, djp changed down stream to just add first state to all states
             push!(state, new_state)
             push!(features_df, features)
             i_dict[car_to_add] = (new_state[5], new_state[6])
@@ -170,15 +170,21 @@ function convertDiscreteState(state)
   disc_v = LinearDiscretizer([0,4,7,10,13,100])
   disc_h = LinearDiscretizer([0,10,30,50,70,100])
   disc_r = LinearDiscretizer([0,10,30,50,70,100])
+  disc_p = LinearDiscretizer([0.0, 0.05, 0.25, 0.5, 0.75, 0.95])
   dist = state[:dist]
   speed = state[:speed]
   head = state[:headway]
   rear = state[:rearway]
+  p1 = state[:p1]
+  p2 = state[:p2]
   dist_d = encode(disc_d, round(dist))
   speed_d = encode(disc_v, round(speed))
   head_d = encode(disc_h, round(head))
   rear_d = encode(disc_r, round(rear))
-  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r))
-  state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d)
+  p1_d = encode(disc_p, p1)
+  p2_d = encode(disc_p, p2)
+  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
+  state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d, p1_d, p2_d)
   return state, sub_dims
 end
+

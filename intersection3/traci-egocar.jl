@@ -18,15 +18,10 @@ n_tracked_cars = 2
 timestep = 0.1
 
 
-
-#returns the sorted distances of for the vehicles
-
-
-
 sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 
 #classifier = intent.loadDNNonly()
-all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[], car_order = Int64[])
+all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 
 all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
 for i = 1:10
@@ -61,8 +56,8 @@ for i = 1:10
       reward_dists_sort = deepcopy(dists_sort)
       recalc_intents = step % 5 == 0
       states, features = get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, recalc_intents, n=n_tracked_cars)
-      all_states = [all_states; states]
-      all_features = [all_features;features]
+      all_states = [all_states; states[1]] #only care about the first one
+      all_features = [all_features;features[1]] #especially for this one
       for vehicleid in vehicles
           yaw = traci.vehicle[:getAngle](vehicleid)
           speed = traci.vehicle[:getSpeed](vehicleid)
@@ -107,7 +102,7 @@ for i = 1:10
   s, sub_dims = convertDiscreteState(all_states[1,:])
   push!(sarsp_df, [s[1], 0, -1, s[1]])
   for j = 2:length(all_states[1])
-    if all_states[j,:car_order] == 1
+    if all_states[j,: car_order] == 1
       s, sub_dims = convertDiscreteState(all_states[j,:])
       push!(sarsp_df, [ sarsp_df[length(sarsp_df[:s]),:sp], 0, -1, s[1]])
     end

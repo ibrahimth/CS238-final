@@ -77,7 +77,7 @@ def loadReformatCSV(csv_file="intersection3/refined_turning_data.csv"):
                           8:convertLane, 9:convertHdwy, 11:convertMove})
     #new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
     new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
-    data = data[:,new_ordering]
+    data = data[::2,new_ordering]
     #data should be: (doesnt actually matter too much, but might as well)
         #[lanesToMedian, lanesToCurb,Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move] 
     #features will be shape (numInputs, trajectory_len, numFeatures)
@@ -177,7 +177,7 @@ def trainDNN(Xtrain, Ytrain, model="DNN"):
         end2 = time.clock()
         print("Epoch",epoch,"Done. Took:", end2-start2, "loss of:", loss)
         start2 = end2
-        epoch_losses.append(epoch, loss)
+        epoch_losses.append((epoch, loss))
     try:
         np.savetxt(np.array(epoch_losses), "DNN_training_losses")
     except:
