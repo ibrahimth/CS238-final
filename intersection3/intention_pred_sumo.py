@@ -168,14 +168,20 @@ def trainDNN(Xtrain, Ytrain, model="DNN"):
     Ytrain = [int(i) for i in Ytrain]
     start = time.clock()
     #classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain))
-    max_epochs = 15
+    max_epochs = 150
     start2 = time.clock()
+    epoch_losses = []
     for epoch in range(max_epochs):
         classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain),steps=3000)
         loss = testDNN(Xtrain, classifier=classifier, Y=Ytrain)
         end2 = time.clock()
         print("Epoch",epoch,"Done. Took:", end2-start2, "loss of:", loss)
         start2 = end2
+        epoch_losses.append(epoch, loss)
+    try:
+        np.savetxt(np.array(epoch_losses), "DNN_training_losses")
+    except:
+        np.save(np.array(epoch_losses), "DNN_training_losses")
     end = time.clock()
     timeFit = end - start
     print("Done fitting, time spent:", timeFit)
@@ -218,8 +224,8 @@ def loadDataTrainSaveDNN(csv_file ="intersection3/refined_turning_data.csv"):
     Xtrain, Ytrain = loadReformatCSV(csv_file)
     print(Xtrain.shape)
     print(Ytrain.shape)
-    Xtrain = Xtrain[:,-1,:]
-    Ytrain = Ytrain[:,-1,:]
+    Xtrain = Xtrain.reshape((Xtrain.shape[0]*Xtrain.shape[1], Xtrain.shape[2]))
+    Ytrain = Ytrain.reshape((Ytrain.shape[0]*Ytrain.shape[1], Ytrain.shape[2]))
     print(Xtrain.shape)
     print(Ytrain.shape)    
     means, stddevs = normalize_get_params(Xtrain)
