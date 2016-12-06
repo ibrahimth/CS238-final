@@ -48,10 +48,6 @@ def convertYaw(yaw):
     return float(yaw)
     
 def convertLane(lanes):
-    print(lanes)
-    print(type(lanes))
-    if type(lanes) == 'PyCall.jlwrap':
-        return -1
     try:
         return int(lanes)
     except:
@@ -71,7 +67,7 @@ def convertMove(move):
     elif move == b'"straight"':
         return 0
     else:
-        print("Error move", move)
+        #print("Error move", move)
         return 0
 
 #given the csv filepath, load the file and reformat, returning Xtrain, Ytrain
@@ -79,6 +75,7 @@ def loadReformatCSV(csv_file="intersection3/refined_turning_data.csv"):
     data = np.loadtxt(csv_file, delimiter=",", skiprows=1,\
             converters = {0:convertVID, 1:convertTimeToFID, 6:convertYaw, 7:convertLane, 
                           8:convertLane, 9:convertHdwy, 11:convertMove})
+    #new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
     new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
     data = data[::2,new_ordering]
     #data should be: (doesnt actually matter too much, but might as well)
@@ -317,12 +314,20 @@ def countWrongLinear(p_dists, Y):
         n += 1
     return numWrong, n
 
-def getBeliefDNN(X):
-    modeldir = os.getcwd() + os.sep + "DNN" + os.sep
-    check_make_paths([modeldir])
+def loadDNNonl(modeldir=os.getcwd()+os.sep+"DNN"+os.sep):
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    X, Ytrain = getXYDNN("refined_turning_data.csv")
     classifier = skflow.DNNClassifier(
         feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(X),
         hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
+    return classifier
+
+def getBeliefDNN(X, classifier=None):
+    if not classifier:
+        modeldir = os.getcwd() + os.sep + "DNN" + os.sep
+        classifier = skflow.DNNClassifier(
+            feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(X),
+            hidden_units=[128, 128], n_classes=3, model_dir=modeldir)
     probs = classifier.predict_proba(X)
     probs_list = [i for i in probs]
     return probs_list
@@ -413,7 +418,10 @@ def convertInput(X):
     return X
     
 #pass in the current features only to getBelief: shape (1, numfeatures=9)
-def johngetDNNbelief(X):
+def johngetDNNbelief(X, classifier=None):
+    tf.logging.set_verbosity(tf.logging.ERROR)
+    #vid, fid, vx, vy, ax, ay, yaw, lanesMed, lanesCurb, hdwy, dist, 0 
+    #to lanesMed, lanesCurb, Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid
     new_ordering = [7, 8, 3, 5, 2, 4, 6, 9, 10, 1, 0, 11]
     X = np.array(X)
     if len(X.shape) == 1:
@@ -421,12 +429,12 @@ def johngetDNNbelief(X):
     X = convertInput(X)
     X = X[:,new_ordering]
     X = X[:,:9]
-    print(X)
-    print(type(X))
     X = np.array(X, dtype=float)
     m, s = np.loadtxt('refined_turning_data_norm_params.txt')
     X = normalize(X, m, s)
-    return getBeliefDNN(X)
+    return getBeliefDNN(X, classifier)
+
+    
 
 #loadDataTrainSaveDNN("refined_turning_data.csv")
 

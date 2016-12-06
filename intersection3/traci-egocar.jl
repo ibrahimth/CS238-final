@@ -34,10 +34,10 @@ function get_state(vehicleid, dist_to_inter)
     else
         headway = 1000.0
     end
-    #features = get_features(vehicleid,pos_i)
-    #println(features)
-    #intention_pred = intent.johngetDNNbelief(features)
-    #println(intention_pred)
+    features = get_features(vehicleid,pos_i)
+    println(features)
+    intention_pred = intent.johngetDNNbelief(features)
+    println(intention_pred)
     return [dist_to_inter, traci.vehicle[:getSpeed](vehicleid),headway, 1000] #rearwaydefault=100 
 end
 
@@ -83,7 +83,7 @@ function get_features(vehicle, pos_i)
     if typeof(headway) != Void
         headway = convert(Float64,headway[2])
     else
-        headway = NA
+        headway = "NA"
     end
     laneID = traci.vehicle[:getLaneID](vehicle)
     edgeID = traci.lane[:getEdgeID](laneID)
@@ -94,12 +94,12 @@ function get_features(vehicle, pos_i)
         numberOfLanesToMedian = convert(Float64,n_lanes - 1 - laneInd)
         numberOfLanesToCurb = convert(Float64,laneInd)
     else
-        numberOfLanesToCurb = NA
-        numberOfLanesToMedian = NA
+        numberOfLanesToCurb = "NA"
+        numberOfLanesToMedian = "NA"
     end
     #here features should be vid fid vx vy ax ay lanesMed, lanesCurb, yaw, hdwy, dist move
     #in python after reordering feautres should be lanesMed, lanesCub, Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move
-    return [vehicle, 0, vel_x, vel_y, NA, NA, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, NA]
+    return [vehicle, 0, vel_x, vel_y, "0", "0", yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, 0]
 end
 
 df_array = Array(DataFrame,0)
