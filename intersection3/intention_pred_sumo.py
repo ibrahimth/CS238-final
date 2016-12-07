@@ -70,8 +70,14 @@ def convertMove(move):
         #print("Error move", move)
         return 0
 
+
 #given the csv filepath, load the file and reformat, returning Xtrain, Ytrain
-def loadReformatCSV(csv_file="intersection3/refined_turning_data.csv"):
+def loadReformatCSV(csv_file="intersection3/refined_turning_data.csv", LSTM=False, save=False, load=False):
+    if load:
+        Xtrain = np.loadtxt("Xtrain.txt")
+        Ytrain = np.loadtxt("Ytrain.txt")
+        print(Xtrain.shape, Ytrain.shape)
+        return Xtrain, Ytrain
     data = np.loadtxt(csv_file, delimiter=",", skiprows=1,\
             converters = {0:convertVID, 1:convertTimeToFID, 6:convertYaw, 7:convertLane, 
                           8:convertLane, 9:convertHdwy, 11:convertMove})
@@ -81,49 +87,98 @@ def loadReformatCSV(csv_file="intersection3/refined_turning_data.csv"):
     #data should be: (doesnt actually matter too much, but might as well)
         #[lanesToMedian, lanesToCurb,Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move] 
     #features will be shape (numInputs, trajectory_len, numFeatures)
-    np.random.shuffle(data) #to make IID
     traj_len = 10 #at .2s timesteps = 2 seconds trajectory info
     num_features = 9
     vidToFramesToFeatures = {}
+    max_vid = max(data[:,10])
+    vid_offset = 1
+    prev_vid = 0
+    dt = data[1,9] - data[0,9]
+    prev_fid = data[0,9]-dt
+    using_other_vid = False
+    other_vid = max_vid + vid_offset
+    for i in range(len(data)): #need to rename some of the vids
+        vid = data[i,10]
+        fid = data[i,9]
+        if fid - prev_fid != dt and vid == prev_vid:
+            using_other_vid = True
+            other_vid = max_vid + vid_offset
+            vid_offset += 1
+        elif vid != prev_vid: #vid and prev_vid will always be the originals
+            using_other_vid = False
+        if using_other_vid:
+            data[i,10] = other_vid
+        prev_fid = fid
+        prev_vid = vid
+    print("Done updating vids, changed:", vid_offset -1)
     for i in range(len(data)):
         fid = data[i,9]
         vid = data[i,10]
         if not vid in vidToFramesToFeatures:
-            vidToFramesToFeatures[vid] = {fid: data[i]}
+            vidToFramesToFeatures[vid] = {fid: data[i,:]}
         else:
-            vidToFramesToFeatures[vid][fid] = data[i]
+            vidToFramesToFeatures[vid][fid] = data[i,:]
+    print("Done creating vid / frame dicts")
     Xtrain = np.array([])
     Ytrain = np.array([])
+    total_admissable = 0
+    num_vids = len(vidToFramesToFeatures.keys())
+    num_done = 0
+    update_every = int(num_vids / 10)
     for vid in sorted(list(vidToFramesToFeatures.keys())):
+        num_done += 1
+        if num_done % update_every == 0:
+            print("Done with", num_done, "/", num_vids, "=", float(num_done)/num_vids)
         fids = sorted(list(vidToFramesToFeatures[vid].keys()))
         i = 0
         fid = fids[i]
         feats = vidToFramesToFeatures[vid][fid]
         startYaw = feats[6]
         admissablesFeatsThisVID = []
-        while abs(startYaw - feats[6]) <= 1.0: #only add trajectory on approach to intersection
+        while feats[0] > -1: 
             admissablesFeatsThisVID.append(feats)
             i+= 1
             if i >= len(fids): break
             fid = fids[i]
             feats = vidToFramesToFeatures[vid][fid]
+        if i < len(fids):
+            admissablesFeatsThisVID.append(feats)
+            if i + 2 < len(fids) and fids[i+2] in vidToFramesToFeatures[vid]:
+                admissablesFeatsThisVID.append(vidToFramesToFeatures[vid][fids[i+1]])
+                admissablesFeatsThisVID.append(vidToFramesToFeatures[vid][fids[i+2]])
+        #append two more for good reason
+
         j = 0
         n = len(admissablesFeatsThisVID)
-        while j + traj_len < n:
-            this_traj = np.ascontiguousarray(admissablesFeatsThisVID[j:j+traj_len])
-            this_traj = this_traj[:,:-3]
-            turn = np.array(admissablesFeatsThisVID[j:j+traj_len])
-            turn = turn[:,-1]
-            this_traj = this_traj.reshape(1, traj_len, num_features)
-            turn = turn.reshape(1, traj_len, 1)
+        total_admissable += n
+        if LSTM:
+            while j + traj_len < n:
+                this_traj = np.ascontiguousarray(admissablesFeatsThisVID[j:j+traj_len])
+                this_traj = this_traj[:,:-3]
+                turn = np.array(admissablesFeatsThisVID[j:j+traj_len])
+                turn = turn[:,-1]
+                this_traj = this_traj.reshape(1, traj_len, num_features)
+                turn = turn.reshape(1, traj_len, 1)
+                if len(Xtrain) == 0:
+                    Xtrain = this_traj
+                    Ytrain = turn
+                else:
+                    Xtrain = np.vstack((Xtrain, this_traj))
+                    Ytrain = np.vstack((Ytrain, turn))
+                j += 1
+        else:
+            xy = np.ascontiguousarray(admissablesFeatsThisVID)
             if len(Xtrain) == 0:
-                Xtrain = this_traj
-                Ytrain = turn
+                Xtrain = xy[:,:-3]
+                Ytrain = xy[:,-1].reshape(len(xy), 1)
             else:
-                Xtrain = np.vstack((Xtrain, this_traj))
-                Ytrain = np.vstack((Ytrain, turn))
-            j += 1
+                Xtrain = np.vstack((Xtrain, xy[:,:-3]))
+                Ytrain = np.vstack((Ytrain, xy[:,-1].reshape(len(xy), 1)))
+    print(total_admissable, "admissable entries")
     print(Xtrain.shape, Ytrain.shape)
+    if save:
+        np.savetxt("Xtrain.txt", Xtrain)
+        np.savetxt("Ytrain.txt", Ytrain)
     return Xtrain, Ytrain
                 
 
@@ -165,6 +220,10 @@ def trainDNN(Xtrain, Ytrain, model="DNN"):
     #return
     #classifier.evaluate(input_fn=input_fn_eval)
     #classifier.predict(x=x) # returns predicted labels (i.e. label's class index).
+    perm = np.random.permutation(len(Xtrain))
+    Xtrain = Xtrain[perm]
+    Ytrain = Ytrain[perm]
+    #np.random.shuffle(data) #to make IID
     Ytrain = [int(i) for i in Ytrain]
     start = time.clock()
     #classifier.fit(input_fn=lambda: input_fn(Xtrain, Ytrain))
@@ -208,14 +267,16 @@ def testDNN(X, model="DNN", classifier=None, Y=None):
         print(i)
     return probs
 
-def getXYDNN(csv_file="intersection3/refined_turning_data.csv", limit_dist = False):
-    Xtrain, Ytrain = loadReformatCSV(csv_file)
+def getXYDNN(csv_file="intersection3/refined_turning_data.csv", limit_dist = False, load=False):
+    Xtrain, Ytrain = loadReformatCSV(csv_file, load=load)
     print(Xtrain.shape)
     print(Ytrain.shape)
-    Xtrain = Xtrain.reshape((Xtrain.shape[0]*Xtrain.shape[1], Xtrain.shape[2]))
-    Ytrain = Ytrain.reshape((Ytrain.shape[0]*Ytrain.shape[1], Ytrain.shape[2]))
-    print(Xtrain.shape)
-    print(Ytrain.shape)    
+    if len(Xtrain.shape) > 2:
+        Xtrain = Xtrain[:,-1,:]#.reshape((Xtrain.shape[0]*Xtrain.shape[1], Xtrain.shape[2]))
+        Ytrain = Ytrain[:,-1,:]#.reshape((Ytrain.shape[0]*Ytrain.shape[1], Ytrain.shape[2]))
+        #only last entry becuase replicated trajectories
+        print(Xtrain.shape)
+        print(Ytrain.shape)    
     means, stddevs = normalize_get_params(Xtrain)
     if limit_dist:
         newXtrain = []
@@ -230,14 +291,16 @@ def getXYDNN(csv_file="intersection3/refined_turning_data.csv", limit_dist = Fal
     Xtrain = normalize(Xtrain, means, stddevs)
     return Xtrain, Ytrain
 
-def loadDataTrainSaveDNN(csv_file ="intersection3/refined_turning_data.csv"):
-    Xtrain, Ytrain = loadReformatCSV(csv_file)
+def loadDataTrainSaveDNN(csv_file ="intersection3/refined_turning_data.csv", save=False, load=False):
+    Xtrain, Ytrain = loadReformatCSV(csv_file, save=save, load=load)
     print(Xtrain.shape)
     print(Ytrain.shape)
-    Xtrain = Xtrain.reshape((Xtrain.shape[0]*Xtrain.shape[1], Xtrain.shape[2]))
-    Ytrain = Ytrain.reshape((Ytrain.shape[0]*Ytrain.shape[1], Ytrain.shape[2]))
-    print(Xtrain.shape)
-    print(Ytrain.shape)    
+    if len(Xtrain.shape) > 2:
+        Xtrain = Xtrain[:,-1,:]#.reshape((Xtrain.shape[0]*Xtrain.shape[1], Xtrain.shape[2]))
+        Ytrain = Ytrain[:,-1,:]#.reshape((Ytrain.shape[0]*Ytrain.shape[1], Ytrain.shape[2]))
+        #only last entry becuase replicated trajectories
+        print(Xtrain.shape)
+        print(Ytrain.shape)    
     means, stddevs = normalize_get_params(Xtrain)
     Xtrain = normalize(Xtrain, means, stddevs)
     np.savetxt(csv_file[:-4]+"_norm_params.txt", np.array([means, stddevs]))
@@ -368,9 +431,9 @@ def testJohnsDNNBelief():
     print(numWrong, "wrong /", n, "== accuracy of:", 1-(float(numWrong) / n))
     print("scoring took:", end-start, "a time of :", (end-start)/n, "per example")
 
-def testAccuracyDNN(limit_dist=False):
+def testAccuracyDNN(limit_dist=False, load=False):
     tf.logging.set_verbosity(tf.logging.ERROR)
-    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv", limit_dist)
+    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv", limit_dist, load=load)
     DNNgetAccuracy(Xtrain, Ytrain)
 
 def DNNgetAccuracy(X, Y_for_score):

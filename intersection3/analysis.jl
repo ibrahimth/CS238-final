@@ -37,7 +37,8 @@ for car in unique(convert(Array,df[:VID]))
     accel_x = (df_small[t,:vel_x] - df_small[t-1,:vel_x])/delta_t
     accel_y = (df_small[t,:vel_y] - df_small[t-1,:vel_y])/delta_t
     if t > 2
-        if df_small[t-2, :VID] == df_small[t, :VID]
+        if df_small[t-2, :VID] == df_small[t, :VID] && df_small[t, :TimeStep] - df_small[t-2, :TimeStep] == 2 * delta_t
+                #make sure its the same car
             accel_x = df_small[t-1, :accel_x] + df_small[t-2, :accel_x] + accel_x
             accel_x /= 3.0
             accel_y = df_small[t-1, :accel_y] + df_small[t-2, :accel_y] + accel_y
