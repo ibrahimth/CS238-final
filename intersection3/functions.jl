@@ -189,3 +189,21 @@ function convertDiscreteState(state)
   return state, sub_dims
 end
 
+function convertDiscreteStateNoP(state)
+  disc_d = LinearDiscretizer([0,30,45,60,75,100])
+  disc_v = LinearDiscretizer([0,4,7,10,13,100])
+  disc_h = LinearDiscretizer([0,10,30,50,70,100])
+  disc_r = LinearDiscretizer([0,10,30,50,70,100])
+  dist = state[:dist]
+  speed = state[:speed]
+  head = state[:headway]
+  rear = state[:rearway]
+  dist_d = encode(disc_d, round(dist))
+  speed_d = encode(disc_v, round(speed))
+  head_d = encode(disc_h, round(head))
+  rear_d = encode(disc_r, round(rear))
+  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h))
+  #sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
+  state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d)
+  return state, sub_dims
+end

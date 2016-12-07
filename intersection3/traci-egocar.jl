@@ -21,11 +21,11 @@ timestep = 0.1
 sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 
 #classifier = intent.loadDNNonly()
-all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
+for i = 1:1000
+  all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 
-all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
-for i = 1:10
-
+  all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
+  println(i/10, "%")
   try
     run(`build.bat >nul`)
   catch
@@ -39,7 +39,7 @@ for i = 1:10
   reward = 0
   step = 0
   last_step = 0
-  go = 180
+  go = 175 + round(rand()*10)
   oncoming_cars = Array(String,0)
   end_dists = Array(Float64,n_tracked_cars,2)
   df = DataFrame(dist = Float64[], speed = Float64[], headway = Float64[])
@@ -56,8 +56,10 @@ for i = 1:10
       reward_dists_sort = deepcopy(dists_sort)
       recalc_intents = step % 5 == 0
       states, features = get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, recalc_intents, n=n_tracked_cars)
-      all_states = [all_states; states[1]] #only care about the first one
-      all_features = [all_features;features[1]] #especially for this one
+      if !isempty(states[1])
+        all_states = [all_states; states[1,:]] #only care about the first one
+        all_features = [all_features;features[1,:]] #especially for this one
+      end
       for vehicleid in vehicles
           yaw = traci.vehicle[:getAngle](vehicleid)
           speed = traci.vehicle[:getSpeed](vehicleid)
@@ -72,7 +74,7 @@ for i = 1:10
     elseif step == go
       traci.vehicle[:slowDown]("ego1", 20, 5000);
       oncoming_cars = features[:, :vid]
-      println(oncoming_cars)
+      #println(oncoming_cars)
     else
       traci.vehicle[:slowDown]("ego1", 20, 5000);
       collision = checkForcollisions()
@@ -96,18 +98,14 @@ for i = 1:10
   traci.close()
 
   reward = calculateReward(end_dists, last_step, collision, oncoming_cars)
-  println(reward)
-
-  #somehow append reward to the states
-  println(all_states[1,:])
+  #println(all_states[1,:])
   for j = 1:length(all_states[1])
-      s, sub_dims = convertDiscreteState(all_states[j,:])
-      push!(sarsp_df, s, 0, -1, 0)
+      s, sub_dims = convertDiscreteStateNoP(all_states[j,:])
+      push!(sarsp_df, [s[1], 0, -1, 0])
       if j > 1
-        sarsp_df[end-1,:sp] = s
+        sarsp_df[end-1,:sp] = s[1]
       end
   end
-
 
 
   sarsp_df[length(sarsp_df[1]),:a] = 1
