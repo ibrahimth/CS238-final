@@ -30,10 +30,20 @@ for car in unique(convert(Array,df[:VID]))
   elseif dyaw > 0
     turn = "right"
   end
+  df_small[1,:accel_x] = 0
+  df_small[1,:accel_y] = 0
   for t in 2:length(df_small[1])
 
     accel_x = (df_small[t,:vel_x] - df_small[t-1,:vel_x])/delta_t
     accel_y = (df_small[t,:vel_y] - df_small[t-1,:vel_y])/delta_t
+    if t > 2
+        if df_small[t-2, :VID] == df_small[t, :VID]
+            accel_x = df_small[t-1, :accel_x] + df_small[t-2, :accel_x] + accel_x
+            accel_x /= 3.0
+            accel_y = df_small[t-1, :accel_y] + df_small[t-2, :accel_y] + accel_y
+            accel_y /= 3.0
+        end
+    end
     df_small[t,:accel_x] = accel_x
     df_small[t,:accel_y] = accel_y
     df_small[t,:turn] = turn

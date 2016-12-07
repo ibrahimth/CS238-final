@@ -208,7 +208,7 @@ def testDNN(X, model="DNN", classifier=None, Y=None):
         print(i)
     return probs
 
-def getXYDNN(csv_file="intersection3/refined_turning_data.csv"):
+def getXYDNN(csv_file="intersection3/refined_turning_data.csv", limit_dist = False):
     Xtrain, Ytrain = loadReformatCSV(csv_file)
     print(Xtrain.shape)
     print(Ytrain.shape)
@@ -217,6 +217,16 @@ def getXYDNN(csv_file="intersection3/refined_turning_data.csv"):
     print(Xtrain.shape)
     print(Ytrain.shape)    
     means, stddevs = normalize_get_params(Xtrain)
+    if limit_dist:
+        newXtrain = []
+        newYtrain = []
+        for i in range(len(Xtrain)):
+            distInd = 8
+            if Xtrain[i,distInd] < 75:
+                newXtrain.append(Xtrain[i])
+                newYtrain.append(Ytrain[i])
+        Xtrain = np.array(newXtrain)
+        Ytrain = np.array(newYtrain)
     Xtrain = normalize(Xtrain, means, stddevs)
     return Xtrain, Ytrain
 
@@ -358,9 +368,9 @@ def testJohnsDNNBelief():
     print(numWrong, "wrong /", n, "== accuracy of:", 1-(float(numWrong) / n))
     print("scoring took:", end-start, "a time of :", (end-start)/n, "per example")
 
-def testAccuracyDNN():
+def testAccuracyDNN(limit_dist=False):
     tf.logging.set_verbosity(tf.logging.ERROR)
-    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv")
+    Xtrain, Ytrain = getXYDNN("refined_turning_data.csv", limit_dist)
     DNNgetAccuracy(Xtrain, Ytrain)
 
 def DNNgetAccuracy(X, Y_for_score):
