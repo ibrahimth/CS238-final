@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on Tue Dec  6 15:36:26 2016 by SUMO jtrrouter Version 0.28.0
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/jtrrouterConfiguration.xsd">
+
+    <input>
+        <net-file value="i3.net.xml"/>
+        <flow-files value="i3.flows.xml"/>
+        <turn-ratio-files value="i3.turns.xml"/>
+    </input>
+
+    <output>
+        <output-file value="i3.rou.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="40"/>
+    </time>
+
+    <random_number>
+        <random value="true"/>
+    </random_number>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="passenger" vClass="passenger"/>
+    <vehicle id="0.0" type="passenger" depart="0.00" departSpeed="max">
+        <route edges="left_in bottom_out"/>
+    </vehicle>
+    <vehicle id="0.1" type="passenger" depart="3.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.2" type="passenger" depart="7.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.3" type="passenger" depart="12.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+    </vehicle>
+    <vehicle id="0.4" type="passenger" depart="13.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.5" type="passenger" depart="15.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+    </vehicle>
+    <vehicle id="0.6" type="passenger" depart="16.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.7" type="passenger" depart="19.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.8" type="passenger" depart="20.00" departSpeed="max">
+        <route edges="left_in right_out"/>
+    </vehicle>
+    <vehicle id="0.9" type="passenger" depart="24.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+    </vehicle>
+    <vehicle id="0.10" type="passenger" depart="34.00" departSpeed="max">
+        <route edges="left_in bottom_out"/>
+    </vehicle>
+    <vehicle id="0.11" type="passenger" depart="39.00" departSpeed="max">
+        <route edges="left_in top_out"/>
+    </vehicle>
+</routes>

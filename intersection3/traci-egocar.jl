@@ -99,13 +99,13 @@ for i = 1:10
   println(reward)
 
   #somehow append reward to the states
-  s, sub_dims = convertDiscreteState(all_states[1,:])
-  push!(sarsp_df, [s[1], 0, -1, s[1]])
-  for j = 2:length(all_states[1])
-    if all_states[j,: car_order] == 1
+  println(all_states[1,:])
+  for j = 1:length(all_states[1])
       s, sub_dims = convertDiscreteState(all_states[j,:])
-      push!(sarsp_df, [ sarsp_df[length(sarsp_df[:s]),:sp], 0, -1, s[1]])
-    end
+      push!(sarsp_df, s, 0, -1, 0)
+      if j > 1
+        sarsp_df[end-1,:sp] = s
+      end
   end
 
 
