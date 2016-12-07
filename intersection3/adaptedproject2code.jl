@@ -459,23 +459,34 @@ function qlearning(data, γ::Float64, α::Float64, states, actions, num_iters::I
     this_mean = 0.0
     tolerance = 1e-30
     while t < num_iters
-        if t % 100 == 0
-            println("Iteration: ", t, " Q_mean: ", prev_mean_Q)
-        end
+
+      #  for i = 1:5
+      #    s = sub2ind([5,5,5,5], i, 5, 3, 3)
+      #    println("Q: ", Q[s::Int64,1], ", " , Q[s::Int64,2])
+      #  end
         for row in eachrow(data)
             #a = row[:a] + 1 #cant be 0
             if row[:sp] > 0
                 Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 + γ*maximum(Q[row[:sp],:])::Float64 - Q[row[:s]::Int,row[:a] + 1::Int])
             else
-                Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 + 0)
+                Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 - Q[row[:s]::Int,row[:a] + 1::Int])
             end
         end
-        this_mean::Float64 = mean(Q)
-        if abs(this_mean - prev_mean_Q) < tolerance
-            break
+        if t % 10 == 0
+          this_mean::Float64 = mean(Q)
         end
+        if t % 10 == 0
+            println("Iteration: ", t, " Q_mean: ", abs(this_mean - prev_mean_Q))
+        end
+        # if abs(this_mean - prev_mean_Q) < tolerance
+        #     break
+        # end
         prev_mean_Q = this_mean
         t += 1
+        # for i = 1:5
+        #   s = sub2ind([5,5,5,5], 1, i, 5, 5)
+        #   println("Q: ", Q[s::Int64,1], ", " , Q[s::Int64,2])
+        # end
     end
     Q
 end
@@ -504,7 +515,8 @@ function find_policy_from_values(Q, states, actions, n; default=4)
     orig = deepcopy(policy)
     for state in states
         if policy[state] == 0
-            policy[state] = find_nearest_nonzero(orig, n, state; defalt=default)
+             #policy[state] = find_nearest_nonzero(orig, n, state; defalt=default)
+             policy[state] = 1
         end
     end
     policy

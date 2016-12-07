@@ -42,7 +42,7 @@ function append_rearway(state)
 end
 
 #given the list of vehicles and their sorted distances, returns first n vehicles with time to intersection > 1.7
-function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, redo_i; n=1, tti_min=1.7, classifier = nothing)
+function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, redo_i; n=1, tti_min=0, classifier = nothing)
     state = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
     features_df = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
     for i = 1:n_tracked_cars
@@ -54,8 +54,14 @@ function get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, red
             this_dist = dists_sort[1]
             tti = this_dist / traci.vehicle[:getSpeed](next_closest)
             dists_sort = deleteat!(dists_sort, 1)
-            if tti > tti_min
+            laneID = traci.vehicle[:getLaneID](next_closest)
+
+            #:center_12_0 is the lane for turning right
+            #:center_14_0 is the lane for turning left
+            #:center_13_0 is the lane for going straight
+            if tti > tti_min && ( laneID == "left_in_0" || laneID == ":center_14_0" || laneID == ":center_12_0 " || laneID == ":center_13_0" )
                 car_to_add = next_closest
+                #println("V: ", car_to_add, "Lane_Dist:", traci.vehicle[:getLanePosition](car_to_add))
             end
         end
         if car_to_add != ""
@@ -106,6 +112,17 @@ function get_features(vehicle, pos_i, prev_v,; dt=0.1)
     #here features should be vid fid vx vy ax ay lanesMed, lanesCurb, yaw, hdwy, dist move
     #in python after reordering feautres should be lanesMed, lanesCub, Vy, Ay, Vx, Ax, yaw, hdwy, dist, fid, vid, move
     return [vehicle, 0, vel_x, vel_y, Ax, Ay, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, 0]
+end
+
+
+function getSimulationInfo(step, n_tacked_cars, v_dict, i_dict)
+  vehicles = traci.vehicle[:getIDList]()
+  dists, dists_sort = get_sorted_distances(vehicles, pos_i)
+  reward_dists_sort = deepcopy(dists_sort)
+  recalc_intents = step % 5 == 0
+  states, features = get_tracked_cars_state(vehicles, dists, dists_sort, v_dict, i_dict, recalc_intents, n=n_tracked_cars)
+  updateVDict(vehicles, v_dict)
+  return vehicles, dists, dists_sort, states, features
 end
 
 
@@ -189,11 +206,13 @@ function convertDiscreteState(state)
   return state, sub_dims
 end
 
-function convertDiscreteStateNoP(state)
-  disc_d = LinearDiscretizer([0,30,45,60,75,100])
-  disc_v = LinearDiscretizer([0,4,7,10,13,100])
-  disc_h = LinearDiscretizer([0,10,30,50,70,100])
-  disc_r = LinearDiscretizer([0,10,30,50,70,100])
+function convertDiscreteStateNoP(state; return_dims = true)
+
+  disc_d = LinearDiscretizer([0.0693661,8.85572,17.8727,33.012,56.5846,194.907])
+  disc_v = LinearDiscretizer([3.26151,5.38921,7.5169,9.6446,11.7723,13.9])
+  disc_h = LinearDiscretizer([8.23185,20.1453,34.0378,61.7246,130.865,800])
+  disc_r = LinearDiscretizer([7.03209,13.5534,20.1956,47.9019,172.42,800])
+
   dist = state[:dist]
   speed = state[:speed]
   head = state[:headway]
@@ -205,5 +224,38 @@ function convertDiscreteStateNoP(state)
   sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h))
   #sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
   state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d)
-  return state, sub_dims
+  if return_dims
+    return state, sub_dims
+  else
+    return state
+  end
+end
+
+function randomizeRoutes()
+  try
+    run(`build.bat >nul`)
+  catch
+    run(`./build.bat`)
+  end
+end
+
+function initSimulation(;gui = false)
+  if gui
+    traci.start(["sumo-gui", "-c" , "i3.sumocfg"])
+  else
+    traci.start(["sumo", "-c" , "i3.sumocfg"])
+  end
+  traci.simulationStep()
+  traci.vehicle[:moveToXY]("ego1","bottom_in", 0, pos_i[1], pos_i[2] - 6, 1)
+  traci.vehicle[:setSpeedMode]("ego1", 01100)
+end
+
+function updateVDict(vehicles, v_dict)
+  for vehicleid in vehicles
+      yaw = traci.vehicle[:getAngle](vehicleid)
+      speed = traci.vehicle[:getSpeed](vehicleid)
+      vel_x = speed*cos(yaw*pi/180)
+      vel_y = speed*sign(yaw*pi/180)
+      v_dict[vehicleid] = (vel_x, vel_y)
+  end
 end

@@ -3,9 +3,6 @@ using Distributions
 using DataFrames
 
 include("adaptedproject2code.jl")
-
-sarsp_df = readtable("SARSP.csv")
-
 function buildTransisitinDict(df)
   Transitions = Dict{Tuple,Array{Int64,1}}()
   for i in 1:size(df)[1]
@@ -27,6 +24,9 @@ function buildTransisitinDict(df)
   return Transitions
 end
 
+sarsp_df = readtable("SARSP.csv")
+sleep(2)
+
 
 function final_proj_q(data; state_range = 1)
     n = maximum(data[:s])
@@ -34,10 +34,14 @@ function final_proj_q(data; state_range = 1)
     actions = [0,1]
     learning_rate = 0.1
     discount = 1.0
-    Q = qlearning(data, discount, learning_rate, states, actions, 1000)
+    Q = qlearning(data, discount, learning_rate, states, actions, 100)
     new_actions = [1,2]
     policy = find_policy_from_values(Q, states, new_actions, n; default=20) #includes nearest neighbor
     policy -= 1
+    Q_full = full(Q)
+    for i = 1:size(Q_full)[1]
+      println(Q_full[i,:], ind2sub((5,5,5,5),i))
+    end
     writecsv("./final_q.policy", policy)
 end
 

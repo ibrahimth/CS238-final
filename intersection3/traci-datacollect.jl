@@ -20,13 +20,13 @@ end
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
-sumoCmd = [ "sumo", "-c" , "i3.sumocfg"]
+sumoCmd = [ "sumo-gui", "-c" , "i3.sumocfg"]
 
 traci.start(sumoCmd)
 traci.simulationStep();
 traci.vehicle[:remove]("ego1")
 step = 0
-while step < 42000 #this should be end in .bat / time_step
+while step < 3000 #this should be end in .bat / time_step
    traci.simulationStep();
    vehicles = traci.vehicle[:getIDList]()
    for vehicle in vehicles
