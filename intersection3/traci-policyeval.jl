@@ -106,7 +106,7 @@ for j = 1:n_trials
   catch
       println("error with calculating reward")
       reward -= 1000
-      number_reward_issues += 1
+      num_reward_issues += 1
   end
   if reward == NaN
     println("NaN reward, setting to -1000")
