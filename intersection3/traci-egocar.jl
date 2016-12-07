@@ -23,7 +23,7 @@ sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 #classifier = intent.loadDNNonly()
 all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
-
+start_sarsp_at = 0
 for i = 1:300
 
   println(i/10, "%")
@@ -76,28 +76,29 @@ for i = 1:300
      last_step = step
      break
     end
-    end
+  end
   traci.close()
 
   reward = calculateReward(end_dists, last_step, collision, oncoming_cars)
-  #println(all_states[1,:])
-  for j = 1:length(all_states[1])
+  #println(size(all_states))
+  for j = start_sarsp_at:length(all_states[1])
       s, sub_dims = convertDiscreteStateNoP(all_states[j,:])
       push!(sarsp_df, [s[1], 0, -1, 0])
       if j > 1
         sarsp_df[end-1,:sp] = s[1]
       end
   end
+  #println(size(sarsp_df))
 
 
-  sarsp_df[length(sarsp_df[1]),:a] = 1
+  sarsp_df[end,:a] = 1
   try
-    sarsp_df[length(sarsp_df[1]),:r] = round(reward)
+    sarsp_df[end,:r] = round(reward)
   catch
-    sarsp_df[length(sarsp_df[1]),:r] = 0
+    sarsp_df[end,:r] = 0
   end
-  sarsp_df[length(sarsp_df[1]),:sp] = 0
-
+  sarsp_df[end,:sp] = 0
+  start_sarsp_at = length(all_states[1])+1
 
 end
 

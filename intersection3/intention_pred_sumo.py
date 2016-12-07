@@ -283,7 +283,7 @@ def getXYDNN(csv_file="intersection3/refined_turning_data.csv", limit_dist = Fal
         newYtrain = []
         for i in range(len(Xtrain)):
             distInd = 8
-            if Xtrain[i,distInd] < 75:
+            if Xtrain[i,distInd] < 25:
                 newXtrain.append(Xtrain[i])
                 newYtrain.append(Ytrain[i])
         Xtrain = np.array(newXtrain)

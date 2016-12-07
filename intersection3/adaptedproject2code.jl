@@ -473,15 +473,13 @@ function qlearning(data, γ::Float64, α::Float64, states, actions, num_iters::I
             end
         end
         if t % 10 == 0
-          this_mean::Float64 = mean(Q)
-        end
-        if t % 10 == 0
+            this_mean::Float64 = mean(Q)
             println("Iteration: ", t, " Q_mean: ", abs(this_mean - prev_mean_Q))
+            if abs(this_mean - prev_mean_Q) < tolerance
+                break
+            end
+            prev_mean_Q = this_mean
         end
-        # if abs(this_mean - prev_mean_Q) < tolerance
-        #     break
-        # end
-        prev_mean_Q = this_mean
         t += 1
         # for i = 1:5
         #   s = sub2ind([5,5,5,5], 1, i, 5, 5)
