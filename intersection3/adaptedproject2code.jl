@@ -474,7 +474,7 @@ function qlearning(data, γ::Float64, α::Float64, states, actions, num_iters::I
         end
         if t % 10 == 0
             this_mean::Float64 = mean(Q)
-            println("Iteration: ", t, " Q_mean: ", abs(this_mean - prev_mean_Q))
+            println("Iteration: ", t, " Q_mean: ", this_mean)#(this_mean - prev_mean_Q))
             if abs(this_mean - prev_mean_Q) < tolerance
                 break
             end

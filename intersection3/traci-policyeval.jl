@@ -8,15 +8,27 @@ using DataFrames
 
 include("./functions.jl")
 
+doing_intentions = false
+policy_name = "final_q.policy"
+if doing_intentions
+    println("Evaluating with intentions")
+    @pyimport intention_pred_sumo as intent
+    policy_name = "final_q_wPs.policy"
+    classifier = intent.loadDNNonly()
+end
+
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
-n_trials = 20
-n_tracked_cars = 2
+
+n_trials = 2
+n_tracked_cars = 200
 timestep = 0.1
 rewards = zeros(Float64, n_trials)
-policy_array = readcsv("working1.policy")
+policy_array = readcsv(policy_name)
 policy_array = convert(Array{Int64,1},reshape(policy_array,length(policy_array)[1]))
+num_collisions = 0
+start_time = now()
 for j = 1:n_trials
   println(j/n_trials * 100, "%")
   randomizeRoutes()
@@ -40,21 +52,34 @@ for j = 1:n_trials
 
     if step > 130 && policy == 0
       traci.vehicle[:slowDown]("ego1", 0, 100);
-      vehciles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
+      vehicles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
 
       if !isempty(states[1])
+        if doing_intentions
+            if step % 5 == 0 || !haskey(i_dict, vehicles[1])
+                array_features = ["0", "0", features[1,:vel_x], features[1,:vel_x], features[1,:Ax], 
+                                  features[1,:Ay], features[1,:yaw], features[1,:numberOfLanesToMedian], 
+                                  features[1,:numberOfLanesToCurb], features[1,:headway], features[1,:dist], 0]
+                        #just using convert didnt work
+                intents_pred = intent.johngetDNNbelief(array_features, classifier)[1]
+                i_dict[vehicles[1]] = (intents_pred[1], intents_pred[2])
+            end
+            states[1,:p1] = i_dict[vehicles[1]][1]
+            states[1,:p2] = i_dict[vehicles[1]][1]
+        end
         s, sub_dims = convertDiscreteStateNoP(states[1,:])
         s = s[1]
-      end
 
-      policy = policy_array[s]
-      reward += -1
+        policy = policy_array[s]
+        reward += -1
+      end
     end
 
     if policy == 1
       traci.vehicle[:slowDown]("ego1", 20, 5000);
       collision = checkForcollisions()
       if collision
+        num_collisions += 1
         break
       end
     end
@@ -80,4 +105,12 @@ for j = 1:n_trials
   rewards[j] = reward
   println(reward)
 end
-println(mean(rewards))
+fin = now()
+duration = fin - start_time
+println("Took: ", duration, " to run ", n_trials, " trials")
+println("Average Reward: ", mean(rewards))
+println("Number of collisions: ", num_collisions)
+save_file = string("results_of_",policy_name)
+f = open(save_file, "w")
+writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions])
+close(f)

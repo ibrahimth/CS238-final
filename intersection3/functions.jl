@@ -114,7 +114,7 @@ function get_features(vehicle, pos_i, prev_v,; dt=0.1)
     return [vehicle, 0, vel_x, vel_y, Ax, Ay, yaw, numberOfLanesToMedian, numberOfLanesToCurb, headway, dist, 0]
 end
 
-
+#used in policy eval
 function getSimulationInfo(step, n_tacked_cars, v_dict, i_dict)
   vehicles = traci.vehicle[:getIDList]()
   dists, dists_sort = get_sorted_distances(vehicles, pos_i)

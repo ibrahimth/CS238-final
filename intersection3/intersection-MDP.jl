@@ -24,8 +24,9 @@ function buildTransisitinDict(df)
   return Transitions
 end
 
-sarsp_df = readtable("SARSP.csv")
-sleep(2)
+sarsp_df = readtable("SARSP_wPs.csv")
+policy_name = "final_q_wPs.policy"
+#sleep(2)
 
 
 function final_proj_q(data; state_range = 1)
@@ -42,7 +43,7 @@ function final_proj_q(data; state_range = 1)
     #for i = 1:size(Q_full)[1]
     #  println(Q_full[i,:], ind2sub((5,5,5,5),i))
     #end
-    writecsv("./final_q.policy", policy)
+    writecsv(policy_name, policy)
 end
 
 final_proj_q(sarsp_df)
