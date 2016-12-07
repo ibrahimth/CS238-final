@@ -22,10 +22,11 @@ sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 
 #classifier = intent.loadDNNonly()
 for i = 1:1000
-  all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 
+  all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
   all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
   println(i/10, "%")
+
   try
     run(`build.bat >nul`)
   catch

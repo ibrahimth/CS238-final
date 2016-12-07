@@ -1,7 +1,6 @@
 using DataFrames
 using DataStructures
 
-file = "./SARSP_wPs.csv"
 
 #comments for final project
 #I tried to remove most of what is unused, i may have missed some stuff though
@@ -19,19 +18,6 @@ function simple_find_policy(data)
     policy = valuesToPolicy(Us, actions, discount, R, T, sps)
     println("Policy:", policy)
     writecsv("./simple.policy", policy)
-end
-
-function final_proj_q(data; state_range = 1)
-    n = maximum(data[:s])
-    states = collect(1:n)
-    actions = [0,1]
-    learning_rate = 0.1
-    discount = 1.0
-    Q = qlearning(data, discount, learning_rate, states, actions)
-    new_actions = [1,2]
-    policy = find_policy_from_values(Q, states, new_actions, n; default=20) #includes nearest neighbor
-    policy -= 1
-    writecsv("./final_q.policy", policy)
 end
 
 function prioruninformed_T()
@@ -85,7 +71,7 @@ function priorDeterministic_T(size; degree_of_certainty=1.0) #degree of certaint
                 end
             end
         end
-    else:
+    else
         println("unsuported deterministic prior size")
     end
     return T, nT_sasp, nT_sa, sps
@@ -465,10 +451,9 @@ function sarsa(data, γ::Float64, α::Float64, states, actions; batch::Int=10000
     Q
 end
 
-function qlearning(data, γ::Float64, α::Float64, states, actions; batch::Int=10000)
+function qlearning(data, γ::Float64, α::Float64, states, actions, num_iters::Int64; batch::Int=10000)
     Q, N = initializeQN(data, length(states), length(actions))
     t::Int = 0
-    num_iters::Int = 120000
     prev_mean_Q::Float64 = 0.0
     num_rows::Int = nrow(data)
     this_mean = 0.0
@@ -617,5 +602,3 @@ end
 #main()
 #data = readtable(med_file)
 #find_med_sarsa(data, state_range=1)
-data = readtable(file)
-final_proj_q(data)

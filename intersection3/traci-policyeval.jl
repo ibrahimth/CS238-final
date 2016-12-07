@@ -21,7 +21,8 @@ timestep = 0.1
 
 
 #returns the sorted distances of for the vehicles
-
+policy_array = readcsv("final_q.policy")
+policy_array = convert(Array{Int64,1},reshape(policy_array,length(policy_array)[1]))
 
 
 #classifier = intent.loadDNNonly()
@@ -33,7 +34,7 @@ for i = 1:n_trials
   catch
     run(`./build.bat`)
   end
-  traci.start(["sumo", "-c" , "i3.sumocfg"])
+  traci.start(["sumo-gui", "-c" , "i3.sumocfg"])
   traci.simulationStep()
   traci.vehicle[:moveToXY]("ego1","bottom_in", 0, pos_i[1], pos_i[2] - 6, 1)
   traci.vehicle[:setSpeedMode]("ego1", 01100)
@@ -55,6 +56,7 @@ for i = 1:n_trials
     if step <= 130
       traci.vehicle[:slowDown]("ego1", 0, 100);
     end
+
     if step > 130 && policy == 0
       traci.vehicle[:slowDown]("ego1", 0, 100);
       vehicles = traci.vehicle[:getIDList]()
@@ -65,13 +67,12 @@ for i = 1:n_trials
       all_features = [all_features;features]
 
       #need to fix where this runs into error if there are no cars on the road
-      for j in size(states)[1]
-        if states[j,:car_order] == 1
-          s, sub_dims = convertDiscreteState(states[j,:])
-        end
+      if !isempty(states[1])
+        s, sub_dims = convertDiscreteState(states[1,:])
+        s = s[1]
       end
-      #policy = policy_array[s]
-      policy = 0
+      policy = policy_array[s]
+      println(s, ", ", policy)
       reward += -1
 
       for vehicleid in vehicles
