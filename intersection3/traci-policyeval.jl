@@ -28,6 +28,7 @@ rewards = zeros(Float64, n_trials)
 policy_array = readcsv(policy_name)
 policy_array = convert(Array{Int64,1},reshape(policy_array,length(policy_array)[1]))
 num_collisions = 0
+num_reward_issues = 0
 start_time = now()
 for j = 1:n_trials
   println(j/n_trials * 100, "%")
@@ -100,7 +101,13 @@ for j = 1:n_trials
   end
   traci.close()
 
-  reward += calculateReward(end_dists, last_step, collision, last_tracked_cars)
+  try
+      reward += calculateReward(end_dists, last_step, collision, last_tracked_cars)
+  catch
+      println("error with calculating reward")
+      reward -= 1000
+      number_reward_issues += 1
+  end
   if reward == NaN
     println("NaN reward, setting to -1000")
     reward = -1000
@@ -110,10 +117,10 @@ for j = 1:n_trials
 end
 fin = now()
 duration = fin - start_time
-println("Took: ", duration, " to run ", n_trials, " trials")
+println("Took: ", duration, " to run ", n_trials, " trials, with ", num_reward_issues, " issues with the reward.")
 println("Average Reward: ", mean(rewards))
 println("Number of collisions: ", num_collisions)
 save_file = string("results_of_",policy_name)
 f = open(save_file, "w")
-writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions])
+writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, number_reward_issues])
 close(f)
