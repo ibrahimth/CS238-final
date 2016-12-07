@@ -1,7 +1,6 @@
 using DataFrames
 using DataStructures
 
-file = "./SARSP_wPs.csv"
 
 #comments for final project
 #I tried to remove most of what is unused, i may have missed some stuff though
@@ -19,19 +18,6 @@ function simple_find_policy(data)
     policy = valuesToPolicy(Us, actions, discount, R, T, sps)
     println("Policy:", policy)
     writecsv("./simple.policy", policy)
-end
-
-function final_proj_q(data; state_range = 1)
-    n = maximum(data[:s])
-    states = collect(1:n)
-    actions = [0,1]
-    learning_rate = 0.1
-    discount = 1.0
-    Q = qlearning(data, discount, learning_rate, states, actions)
-    new_actions = [1,2]
-    policy = find_policy_from_values(Q, states, new_actions, n; default=20) #includes nearest neighbor
-    policy -= 1
-    writecsv("./final_q.policy", policy)
 end
 
 function prioruninformed_T()
@@ -85,7 +71,7 @@ function priorDeterministic_T(size; degree_of_certainty=1.0) #degree of certaint
                 end
             end
         end
-    else:
+    else
         println("unsuported deterministic prior size")
     end
     return T, nT_sasp, nT_sa, sps
@@ -465,32 +451,42 @@ function sarsa(data, γ::Float64, α::Float64, states, actions; batch::Int=10000
     Q
 end
 
-function qlearning(data, γ::Float64, α::Float64, states, actions; batch::Int=10000)
+function qlearning(data, γ::Float64, α::Float64, states, actions, num_iters::Int64; batch::Int=10000)
     Q, N = initializeQN(data, length(states), length(actions))
     t::Int = 0
-    num_iters::Int = 120000
     prev_mean_Q::Float64 = 0.0
     num_rows::Int = nrow(data)
     this_mean = 0.0
     tolerance = 1e-30
     while t < num_iters
-        if t % 100 == 0
-            println("Iteration: ", t, " Q_mean: ", prev_mean_Q)
-        end
+
+      #  for i = 1:5
+      #    s = sub2ind([5,5,5,5], i, 5, 3, 3)
+      #    println("Q: ", Q[s::Int64,1], ", " , Q[s::Int64,2])
+      #  end
         for row in eachrow(data)
             #a = row[:a] + 1 #cant be 0
             if row[:sp] > 0
                 Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 + γ*maximum(Q[row[:sp],:])::Float64 - Q[row[:s]::Int,row[:a] + 1::Int])
             else
-                Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 + 0)
+                Q[row[:s]::Int64,row[:a] + 1::Int64] += α*(row[:r]::Int64 - Q[row[:s]::Int,row[:a] + 1::Int])
             end
         end
-        this_mean::Float64 = mean(Q)
-        if abs(this_mean - prev_mean_Q) < tolerance
-            break
+        if t % 10 == 0
+          this_mean::Float64 = mean(Q)
         end
+        if t % 10 == 0
+            println("Iteration: ", t, " Q_mean: ", abs(this_mean - prev_mean_Q))
+        end
+        # if abs(this_mean - prev_mean_Q) < tolerance
+        #     break
+        # end
         prev_mean_Q = this_mean
         t += 1
+        # for i = 1:5
+        #   s = sub2ind([5,5,5,5], 1, i, 5, 5)
+        #   println("Q: ", Q[s::Int64,1], ", " , Q[s::Int64,2])
+        # end
     end
     Q
 end
@@ -519,7 +515,8 @@ function find_policy_from_values(Q, states, actions, n; default=4)
     orig = deepcopy(policy)
     for state in states
         if policy[state] == 0
-            policy[state] = find_nearest_nonzero(orig, n, state; defalt=default)
+             #policy[state] = find_nearest_nonzero(orig, n, state; defalt=default)
+             policy[state] = 1
         end
     end
     policy
@@ -617,5 +614,3 @@ end
 #main()
 #data = readtable(med_file)
 #find_med_sarsa(data, state_range=1)
-data = readtable(file)
-final_proj_q(data)
