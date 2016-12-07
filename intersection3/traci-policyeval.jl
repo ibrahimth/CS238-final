@@ -21,8 +21,8 @@ net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
 
-n_trials = 2
-n_tracked_cars = 200
+n_trials = 200
+n_tracked_cars = 2
 timestep = 0.1
 rewards = zeros(Float64, n_trials)
 policy_array = readcsv(policy_name)
@@ -101,7 +101,10 @@ for j = 1:n_trials
   traci.close()
 
   reward += calculateReward(end_dists, last_step, collision, last_tracked_cars)
-
+  if reward == NaN
+    println("NaN reward, setting to -1000")
+    reward = -1000
+  end
   rewards[j] = reward
   println(reward)
 end
