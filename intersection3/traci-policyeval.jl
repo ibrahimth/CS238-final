@@ -8,7 +8,7 @@ using DataFrames
 
 include("./functions.jl")
 
-doing_intentions = false
+doing_intentions = true
 policy_name = "final_q.policy"
 if doing_intentions
     println("Evaluating with intentions")
@@ -33,7 +33,13 @@ start_time = now()
 for j = 1:n_trials
   println(j/n_trials * 100, "%")
   randomizeRoutes()
-  initSimulation(gui = false)
+  try
+    initSimulation(gui = false)
+  except
+    print("Caught issue initializing simulation...")
+    j -= 1
+    continue
+  end
   collision = false
   policy = 0
   reward = 0
@@ -109,8 +115,9 @@ for j = 1:n_trials
       num_reward_issues += 1
   end
   if reward == NaN
-    println("NaN reward, setting to -1000")
-    reward = -1000
+      println("NaN reward, setting to -1000")
+      reward = -1000
+      num_reward_issues += 1
   end
   rewards[j] = reward
   println(reward)
@@ -122,5 +129,5 @@ println("Average Reward: ", mean(rewards))
 println("Number of collisions: ", num_collisions)
 save_file = string("results_of_",policy_name)
 f = open(save_file, "w")
-writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, number_reward_issues])
+writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, num_reward_issues])
 close(f)
