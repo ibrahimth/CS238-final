@@ -183,15 +183,14 @@ end
 #convets a single line of the states dataframe into a state using sub2ind. Also returns the sub_dims array which
 #contains the number of possible values for each state
 function convertDiscreteState(state)
-  disc_d = LinearDiscretizer([0.0686011,21.7173,43.366,65.0147,86.6634,108.312,129.961,151.61,173.258,194.907])
-  disc_v = LinearDiscretizer([3.27319,4.45394,5.6347,6.81546,7.99622,9.17697,10.3577,11.5385,12.7192,13.9])
-  disc_h = LinearDiscretizer([7.03333,20.7943,34.5553,48.3163,62.0773,75.8383,89.5993,103.36,117.121])
-  disc_r = LinearDiscretizer([6.33001,27.0912,47.8525,68.6137,89.3749,110.136,130.897,151.659,172.42])
-  #disc_d = LinearDiscretizer([0.0693661,8.85572,17.8727,33.012,56.5846,194.907])
-  #disc_v = LinearDiscretizer([3.26151,5.38921,7.5169,9.6446,11.7723,13.9])
-  #disc_h = LinearDiscretizer([8.23185,20.1453,34.0378,61.7246,130.865,800])
-  #disc_r = LinearDiscretizer([7.03209,13.5534,20.1956,47.9019,172.42,800])
-  disc_p = LinearDiscretizer([0.0, 0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95, 1.0])
+  disc_d = LinearDiscretizer([0.0693661,8.85572,17.8727,33.012,56.5846,194.907])
+  disc_v = LinearDiscretizer([3.26151,5.38921,7.5169,9.6446,11.7723,13.9])
+  disc_h = LinearDiscretizer([8.23185,20.1453,34.0378,61.7246,130.865,800])
+  disc_r = LinearDiscretizer([7.03209,13.5534,20.1956,47.9019,172.42,800])
+  disc_p = LinearDiscretizer([0.0, 0.05, 0.25, 0.5, 0.75, 0.95, 1.0])
+  if state == nothing #to get max state
+    return nlabels(disc_d) * nlabels(disc_v) * nlabels(disc_h) * nlabels(disc_r) * nlabels(disc_p) * nlabels(disc_p)
+  end
   dist = state[:dist]
   speed = state[:speed]
   head = state[:headway]
@@ -216,10 +215,10 @@ end
 
 function convertDiscreteStateNoP(state; return_dims = true)
 
-  disc_d = LinearDiscretizer([0.0693661,8.85572,17.8727,33.012,56.5846,194.907])
-  disc_v = LinearDiscretizer([3.26151,5.38921,7.5169,9.6446,11.7723,13.9])
-  disc_h = LinearDiscretizer([8.23185,20.1453,34.0378,61.7246,130.865,800])
-  disc_r = LinearDiscretizer([7.03209,13.5534,20.1956,47.9019,172.42,800])
+  disc_d = LinearDiscretizer([0, 8,18,33,56,194])
+  disc_v = LinearDiscretizer([3,5,7,9,11,14])
+  disc_h = LinearDiscretizer([8,20,34,61,130,800, 1000])
+  disc_r = LinearDiscretizer([7,13,20,47,172,800, 1000])
 
   dist = state[:dist]
   speed = state[:speed]

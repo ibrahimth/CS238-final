@@ -9,18 +9,22 @@ using DataFrames
 include("./functions.jl")
 
 doing_intentions = false
+doing_baseline = false   #options: false, "rand", "tti"
 policy_name = "final_q.policy"
 if doing_intentions
     println("Evaluating with intentions")
     @pyimport intention_pred_sumo as intent
     policy_name = "final_q_wPs.policy"
     classifier = intent.loadDNNonly()
+elseif doing_baseline != false
+    println("Doing baseline:", doing_baseline)
+    policy_name = string("final_q_rand.policy") #tti wont use, need to make sure loads fine
 end
 
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
-
+start_policy_at = 150
 n_trials = 2000
 n_tracked_cars = 2
 timestep = 0.1
@@ -30,6 +34,7 @@ policy_array = convert(Array{Int64,1},reshape(policy_array,length(policy_array)[
 num_collisions = 0
 num_reward_issues = 0
 num_sim_issues = 0
+avg_wait = 0
 start_time = now()
 for j = 1:n_trials
   println(j/n_trials * 100, "%")
@@ -63,11 +68,11 @@ for j = 1:n_trials
     end
     
     pos_ego = traci.vehicle[:getPosition]("ego1")
-    if step <= 130
+    if step <= start_policy_at
       traci.vehicle[:slowDown]("ego1", 0, 100);
     end
 
-    if step > 130 && policy == 0
+    if step > start_policy_at && policy == 0
       traci.vehicle[:slowDown]("ego1", 0, 100);
       vehicles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
 
@@ -86,7 +91,19 @@ for j = 1:n_trials
         end
         s, sub_dims = convertDiscreteState(states[1,:]) #modified so it handles no probs
         s = s[1]
-        policy = policy_array[s]
+        policy = 0
+        try
+          policy = policy_array[s]
+        catch
+          println("error assigning policy state:",s)
+        end
+        if doing_baseline == "tti"
+            policy = 0
+            tti = features[1,:dist] / sqrt(features[1,:vel_x]^2 + features[1,:vel_y]^2)
+            if tti >= 3.0
+                policy = 1
+            end
+        end
         reward += -1
       end
     end
@@ -102,30 +119,31 @@ for j = 1:n_trials
 
     dist = traci.simulation[:getDistance2D](pos_ego[1], pos_ego[2], pos_i[1], pos_i[2])
     if dist > 25
-     i = 0
-     #finds the final distance for the cars
-     for vehicle in features[:,:vid]
-       i += 1
-       pos = traci.vehicle[:getPosition](vehicle)
-       end_dists[i,1] = dist = traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2])
-     end
-     last_tracked_cars = features[:,:vid]
-     last_step = step
-     break
+      i = 0
+      #finds the final distance for the cars
+      for vehicle in features[:,:vid]
+        i += 1
+        pos = traci.vehicle[:getPosition](vehicle)
+        end_dists[i,1] = dist = traci.simulation[:getDistance2D](pos[1], pos[2], pos_i[1], pos_i[2])
+      end
+      last_tracked_cars = features[:,:vid]
+      last_step = step
+      break
     end
   end
   traci.close()
-
+  this_wait = last_step - start_policy_at
+  avg_wait += convert(Float64,(this_wait - avg_wait)) / j
   try
       reward += calculateReward(end_dists, last_step, collision, last_tracked_cars)
   catch
       println("error with calculating reward")
-      reward -= 1000
+      reward -= 5000
       num_reward_issues += 1
   end
   if reward == NaN
-      println("NaN reward, setting to -1000")
-      reward = -1000
+      println("NaN reward, setting to -5000")
+      reward = -5000
       num_reward_issues += 1
   end
   rewards[j] = reward
@@ -135,7 +153,7 @@ for j = 1:n_trials
     duration = fin - start_time
     save_file = string("results_of_",policy_name)
     f = open(save_file, "w")
-    writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, num_reward_issues, num_sim_issues])
+    writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, avg_wait, num_reward_issues, num_sim_issues])
     close(f)
   end
 end
@@ -143,9 +161,9 @@ fin = now()
 duration = fin - start_time
 println("Took: ", duration, " to run ", n_trials, " trials, with ", num_reward_issues, " issues with the reward.")
 println("Encountered ", num_sim_issues, " issues with the simulation.")
-println("Average Reward: ", mean(rewards))
+println("Average Reward: ", mean(rewards), ", Average wait of: ", avg_wait)
 println("Number of collisions: ", num_collisions)
 save_file = string("results_of_",policy_name)
 f = open(save_file, "w")
-writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, num_reward_issues, num_sim_issues])
+writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, avg_wait, num_reward_issues, num_sim_issues])
 close(f)

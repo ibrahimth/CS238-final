@@ -24,7 +24,7 @@ sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
 start_sarsp_at = 1  
-for i = 1:900
+for i = 1:1000
 
   println(i/10, "%")
 
@@ -34,7 +34,7 @@ for i = 1:900
   reward = 0
   step = 0
   last_step = 0
-  go = 185 + round(rand()*10)
+  go = 175 + round(rand()*10)
   oncoming_cars = Array(String,0)
   end_dists = Array(Float64,n_tracked_cars,2)
   df = DataFrame(dist = Float64[], speed = Float64[], headway = Float64[])
@@ -44,11 +44,11 @@ for i = 1:900
     step += 1
     traci.simulationStep();
     pos_ego = traci.vehicle[:getPosition]("ego1")
-    if step > 140 && step < go
+    if step > 130 && step < go
       vehciles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
       if !isempty(states[1])
-        all_states = [all_states; states[1,:]] #only care about the first one
-        all_features = [all_features;features[1,:]] #especially for this one
+        all_states = [all_states;states[1,:]]
+        all_features = [all_features; features[1,:]]
       end
     end
 

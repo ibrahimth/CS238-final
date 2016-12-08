@@ -9,9 +9,9 @@ states = readtable("simulated_states.csv")
 for i = 1:4
   data = states[i]
   data = data[find(x -> x < 800,data)]
-  n = 8
+  n = 5
   if i <= 2
-    n = 9
+    n = 6
   end
   bins = binedges(DiscretizeUniformWidth(n),data)
   println(bins)
