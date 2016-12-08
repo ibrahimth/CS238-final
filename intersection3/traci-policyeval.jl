@@ -8,8 +8,8 @@ using DataFrames
 
 include("./functions.jl")
 
-doing_intentions = false
-doing_baseline = "tti"   #options: false, "rand", "tti"
+doing_intentions = true
+doing_baseline = false   #options: false, "rand", "tti"
 policy_name = "final_q.policy"
 if doing_intentions
     println("Evaluating with intentions")
@@ -153,7 +153,7 @@ for j = 1:n_trials
     duration = fin - start_time
     save_file = string("results_of_",policy_name)
     f = open(save_file, "w")
-    writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, avg_wait, num_reward_issues, num_sim_issues])
+    writedlm(f, [string(duration), j, mean(rewards), num_collisions, avg_wait, num_reward_issues, num_sim_issues])
     close(f)
   end
 end
