@@ -183,26 +183,34 @@ end
 #convets a single line of the states dataframe into a state using sub2ind. Also returns the sub_dims array which
 #contains the number of possible values for each state
 function convertDiscreteState(state)
-  disc_d = LinearDiscretizer([0,30,45,60,75,100])
-  disc_v = LinearDiscretizer([0,4,7,10,13,100])
-  disc_h = LinearDiscretizer([0,10,30,50,70,100])
-  disc_r = LinearDiscretizer([0,10,30,50,70,100])
-  disc_p = LinearDiscretizer([0.0, 0.05, 0.25, 0.5, 0.75, 0.95])
+  disc_d = LinearDiscretizer([0.0686011,21.7173,43.366,65.0147,86.6634,108.312,129.961,151.61,173.258,194.907])
+  disc_v = LinearDiscretizer([3.27319,4.45394,5.6347,6.81546,7.99622,9.17697,10.3577,11.5385,12.7192,13.9])
+  disc_h = LinearDiscretizer([7.03333,20.7943,34.5553,48.3163,62.0773,75.8383,89.5993,103.36,117.121])
+  disc_r = LinearDiscretizer([6.33001,27.0912,47.8525,68.6137,89.3749,110.136,130.897,151.659,172.42])
+  #disc_d = LinearDiscretizer([0.0693661,8.85572,17.8727,33.012,56.5846,194.907])
+  #disc_v = LinearDiscretizer([3.26151,5.38921,7.5169,9.6446,11.7723,13.9])
+  #disc_h = LinearDiscretizer([8.23185,20.1453,34.0378,61.7246,130.865,800])
+  #disc_r = LinearDiscretizer([7.03209,13.5534,20.1956,47.9019,172.42,800])
+  disc_p = LinearDiscretizer([0.0, 0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95, 1.0])
   dist = state[:dist]
   speed = state[:speed]
   head = state[:headway]
   rear = state[:rearway]
-  p1 = state[:p1]
-  p2 = state[:p2]
   dist_d = encode(disc_d, round(dist))
   speed_d = encode(disc_v, round(speed))
   head_d = encode(disc_h, round(head))
   rear_d = encode(disc_r, round(rear))
-  p1_d = encode(disc_p, p1)
-  p2_d = encode(disc_p, p2)
-  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_p), nlabels(disc_p))
-  #sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
-  state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d, p1_d, p2_d)
+  if :p1 in names(state)
+      p1 = state[:p1]
+      p2 = state[:p2]
+      p1_d = encode(disc_p, p1)
+      p2_d = encode(disc_p, p2)
+      sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
+      state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d, p1_d, p2_d)
+      return state, sub_dims
+  end
+  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r))
+  state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d)
   return state, sub_dims
 end
 
@@ -221,8 +229,7 @@ function convertDiscreteStateNoP(state; return_dims = true)
   speed_d = encode(disc_v, round(speed))
   head_d = encode(disc_h, round(head))
   rear_d = encode(disc_r, round(rear))
-  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h))
-  #sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
+  sub_dims = (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r))
   state = sub2ind(sub_dims, dist_d, speed_d, head_d, rear_d)
   if return_dims
     return state, sub_dims

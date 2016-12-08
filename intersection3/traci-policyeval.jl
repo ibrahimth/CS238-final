@@ -84,7 +84,7 @@ for j = 1:n_trials
             states[1,:p1] = i_dict[vehicles[1]][1]
             states[1,:p2] = i_dict[vehicles[1]][1]
         end
-        s, sub_dims = convertDiscreteStateNoP(states[1,:])
+        s, sub_dims = convertDiscreteState(states[1,:]) #modified so it handles no probs
         s = s[1]
 
         policy = policy_array[s]
@@ -131,6 +131,14 @@ for j = 1:n_trials
   end
   rewards[j] = reward
   println(reward)
+  if j % 10 == 0 #save checkpoint
+    fin = now()
+    duration = fin - start_time
+    save_file = string("results_of_",policy_name)
+    f = open(save_file, "w")
+    writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, num_reward_issues, num_sim_issues])
+    close(f)
+  end
 end
 fin = now()
 duration = fin - start_time
