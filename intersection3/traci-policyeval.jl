@@ -9,7 +9,7 @@ using DataFrames
 include("./functions.jl")
 
 doing_intentions = false
-doing_baseline = false   #options: false, "rand", "tti"
+doing_baseline = "tti"   #options: false, "rand", "tti"
 policy_name = "final_q.policy"
 if doing_intentions
     println("Evaluating with intentions")
@@ -38,8 +38,8 @@ avg_wait = 0
 start_time = now()
 for j = 1:n_trials
   println(j/n_trials * 100, "%")
-  randomizeRoutes()
   try
+    randomizeRoutes()
     initSimulation(gui = false)
   except
     print("Caught issue initializing simulation...")
