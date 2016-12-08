@@ -21,7 +21,7 @@ net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
 
-n_trials = 200
+n_trials = 2000
 n_tracked_cars = 2
 timestep = 0.1
 rewards = zeros(Float64, n_trials)
@@ -86,7 +86,6 @@ for j = 1:n_trials
         end
         s, sub_dims = convertDiscreteState(states[1,:]) #modified so it handles no probs
         s = s[1]
-
         policy = policy_array[s]
         reward += -1
       end

@@ -21,11 +21,16 @@ function convert_sim_states_and_features_to_sarsp()
     all_features = readtable("simulated_corresponding_features.csv")
     prev_sarsp = readtable("SARSP.csv") #to get actions and rewards
     intent_predictions = convert_intents(intent.johngetDNNbelief(Array(all_features)))
-    println(size(intent_predictions))
+    println("intent pred size:", size(intent_predictions))
     
     println(size(prev_sarsp))
     println(size(all_states))
-    all_states =hcat(all_states, intent_predictions)
+    if :p1 in names(all_states)
+      all_states[:p1] = intent_predictions[:p1]
+      all_states[:p2] = intent_predictions[:p2]
+    else
+      all_states = hcat(all_states, intent_predictions)
+    end
     println(size(all_states))
     new_sarsps = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
     prev_a = 1
