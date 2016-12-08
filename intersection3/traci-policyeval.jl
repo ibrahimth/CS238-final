@@ -148,11 +148,11 @@ for j = 1:n_trials
   end
   rewards[j] = reward
   println(reward)
-  if j % 10 == 0 #save checkpoint
+  if j % 5 == 0 #save checkpoint
     fin = now()
     duration = fin - start_time
     save_file = string("results_of_",policy_name)
-    f_rewards = open(string("rewards_", save_file), w)
+    f_rewards = open(string("rewards_", save_file), "w")
     writedlm(f_rewards, rewards)
     close(f_rewards)
     
@@ -168,7 +168,7 @@ println("Encountered ", num_sim_issues, " issues with the simulation.")
 println("Average Reward: ", mean(rewards), ", Average wait of: ", avg_wait)
 println("Number of collisions: ", num_collisions)
 save_file = string("results_of_",policy_name)
-f_rewards = open(string("rewards_", save_file), w)
+f_rewards = open(string("rewards_", save_file), "w")
 writedlm(f_rewards, rewards)
 close(f_rewards)
 f = open(save_file, "w")

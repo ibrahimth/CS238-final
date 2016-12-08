@@ -182,14 +182,18 @@ end
 
 #convets a single line of the states dataframe into a state using sub2ind. Also returns the sub_dims array which
 #contains the number of possible values for each state
-function convertDiscreteState(state)
+function convertDiscreteState(state; dimens=false)
   disc_d = LinearDiscretizer([0.0693661,8.85572,17.8727,33.012,56.5846,194.907])
   disc_v = LinearDiscretizer([3.26151,5.38921,7.5169,9.6446,11.7723,13.9])
   disc_h = LinearDiscretizer([8.23185,20.1453,34.0378,61.7246,130.865,800])
   disc_r = LinearDiscretizer([7.03209,13.5534,20.1956,47.9019,172.42,800])
   disc_p = LinearDiscretizer([0.0, 0.05, 0.25, 0.5, 0.75, 0.95, 1.0])
   if state == nothing #to get max state
-    return nlabels(disc_d) * nlabels(disc_v) * nlabels(disc_h) * nlabels(disc_r) * nlabels(disc_p) * nlabels(disc_p)
+    n = nlabels(disc_d) * nlabels(disc_v) * nlabels(disc_h) * nlabels(disc_r) * nlabels(disc_p) * nlabels(disc_p)
+    if dimens == true
+        return n, (nlabels(disc_d), nlabels(disc_v), nlabels(disc_h), nlabels(disc_r), nlabels(disc_p), nlabels(disc_p))
+    end
+    return n
   end
   dist = state[:dist]
   speed = state[:speed]
