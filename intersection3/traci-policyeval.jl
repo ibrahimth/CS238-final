@@ -8,7 +8,7 @@ using DataFrames
 
 include("./functions.jl")
 
-doing_intentions = true
+doing_intentions = false
 policy_name = "final_q.policy"
 if doing_intentions
     println("Evaluating with intentions")
@@ -29,6 +29,7 @@ policy_array = readcsv(policy_name)
 policy_array = convert(Array{Int64,1},reshape(policy_array,length(policy_array)[1]))
 num_collisions = 0
 num_reward_issues = 0
+num_sim_issues = 0
 start_time = now()
 for j = 1:n_trials
   println(j/n_trials * 100, "%")
@@ -38,6 +39,7 @@ for j = 1:n_trials
   except
     print("Caught issue initializing simulation...")
     j -= 1
+    num_sim_issues += 1
     continue
   end
   collision = false
@@ -51,7 +53,15 @@ for j = 1:n_trials
   i_dict = Dict() #to keep track of prev intentions to avoid recalculating every time step
   while true
     step += 1
-    traci.simulationStep();
+    try
+        traci.simulationStep();
+    except
+        print("Caught issue in simulation taking a step...")
+        step -= 1
+        num_sim_issues += 1
+        continue
+    end
+    
     pos_ego = traci.vehicle[:getPosition]("ego1")
     if step <= 130
       traci.vehicle[:slowDown]("ego1", 0, 100);
@@ -125,9 +135,10 @@ end
 fin = now()
 duration = fin - start_time
 println("Took: ", duration, " to run ", n_trials, " trials, with ", num_reward_issues, " issues with the reward.")
+println("Encountered ", num_sim_issues, " issues with the simulation.")
 println("Average Reward: ", mean(rewards))
 println("Number of collisions: ", num_collisions)
 save_file = string("results_of_",policy_name)
 f = open(save_file, "w")
-writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, num_reward_issues])
+writedlm(f, [string(duration), n_trials, mean(rewards), num_collisions, num_reward_issues, num_sim_issues])
 close(f)
