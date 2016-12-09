@@ -25,10 +25,10 @@ function buildTransisitinDict(df)
   return Transitions
 end
 
-#sarsp_df = readtable("SARSP.csv")
-#policy_name = "final_q.policy"
-sarsp_df = readtable("SARSP_wPs.csv")
-policy_name = "final_q_wPs.policy"
+sarsp_df = readtable("SARSP.csv")
+policy_name = "final_q.policy"
+#sarsp_df = readtable("SARSP_wPs.csv")
+#policy_name = "final_q_wPs.policy"
 #sleep(2)
 
 function update_policy(policy, sub_dims, d, s, h, r, p1, p2)
