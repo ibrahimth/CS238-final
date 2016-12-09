@@ -26,9 +26,7 @@ all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float6
 start_sarsp_at = 1
 num_sims = 10000
 for i = 1:num_sims
-  if num_sims <= 1000 || i % round(num_sims / 1000) == 0
-    println((i*100)/num_sims, "%")
-  end
+  println((i*100)/num_sims, "%")
 
   randomizeRoutes()
   initSimulation(gui = false)
@@ -46,7 +44,7 @@ for i = 1:num_sims
     step += 1
     traci.simulationStep();
     pos_ego = traci.vehicle[:getPosition]("ego1")
-    if step > 130 && step < go
+    if step > 140 && step < go
       vehciles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
       if !isempty(states[1])
         all_states = [all_states;states[1,:]]
