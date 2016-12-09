@@ -74,6 +74,7 @@ function new_nearest_neighbor(orig_policy, sub_dims)
             for p1 in 1:p1_d
                 for p2 in 1:p2_d
                     update_policy(policy, sub_dims, dist_d, speed_d, h_d, r_d, p1, p2)
+                    continue #was too lazy to comment out the rest...
                     for new_d in dist_d+1:sub_dims[1]
                         update_policy(policy, sub_dims, new_d, speed_d, h_d, r_d, p1, p2)
                         for new_v in 1:speed_d-1

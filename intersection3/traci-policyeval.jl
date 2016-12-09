@@ -8,8 +8,8 @@ using DataFrames
 
 include("./functions.jl")
 
-doing_intentions = true
-doing_baseline = false   #options: false, "rand", "tti"
+doing_intentions = false
+doing_baseline = "tti" #options: false, "rand", "tti"
 policy_name = "final_q.policy"
 if doing_intentions
     println("Evaluating with intentions")
