@@ -27,8 +27,10 @@ end
 
 sarsp_df = readtable("SARSP.csv")
 policy_name = "final_q.policy"
-#sarsp_df = readtable("SARSP_wPs.csv")
-#policy_name = "final_q_wPs.policy"
+if "intents" in ARGS
+    sarsp_df = readtable("SARSP_wPs.csv")
+    policy_name = "final_q_wPs.policy"
+end
 #sleep(2)
 
 function update_policy(policy, sub_dims, d, s, h, r, p1, p2)
@@ -44,7 +46,8 @@ function new_nearest_neighbor(orig_policy, sub_dims)
             dist_d, speed_d, h_d, r_d, p1_d, p2_d = state
             for new_d in dist_d+1:sub_dims[1]
                 update_policy(policy, sub_dims, new_d, speed_d, h_d, r_d, p1_d, p2_d)
-                for new_v in 1:speed_d-1
+                continue
+                for new_v in 1:speed_d
                     update_policy(policy, sub_dims, new_d, new_v, h_d, r_d, p1_d, p2_d)
                 end
                 for new_h in h_d+1:sub_dims[3]
@@ -54,8 +57,9 @@ function new_nearest_neighbor(orig_policy, sub_dims)
                     update_policy(policy, sub_dims, new_d, speed_d, h_d, new_r, p1_d, p2_d)
                 end
             end
-            for new_v in 1:speed_d-1
+            for new_v in 1:speed_d
                 update_policy(policy, sub_dims, dist_d, new_v, h_d, r_d, p1_d, p2_d)
+                continue
                 for new_h in h_d+1:sub_dims[3]
                     update_policy(policy, sub_dims, dist_d, new_v, new_h, r_d, p1_d, p2_d)
                 end
@@ -70,14 +74,13 @@ function new_nearest_neighbor(orig_policy, sub_dims)
                 update_policy(policy, sub_dims, dist_d, speed_d, h_d, new_r, p1_d, p2_d)
             end
 
-
             for p1 in 1:p1_d
                 for p2 in 1:p2_d
                     update_policy(policy, sub_dims, dist_d, speed_d, h_d, r_d, p1, p2)
-                    continue #was too lazy to comment out the rest...
+                    continue
                     for new_d in dist_d+1:sub_dims[1]
                         update_policy(policy, sub_dims, new_d, speed_d, h_d, r_d, p1, p2)
-                        for new_v in 1:speed_d-1
+                        for new_v in 1:speed_d
                             update_policy(policy, sub_dims, new_d, new_v, h_d, r_d, p1, p2)
                         end
                         for new_h in h_d+1:sub_dims[3]
@@ -87,7 +90,7 @@ function new_nearest_neighbor(orig_policy, sub_dims)
                             update_policy(policy, sub_dims, new_d, speed_d, h_d, new_r, p1, p2)
                         end
                     end
-                    for new_v in 1:speed_d-1
+                    for new_v in 1:speed_d
                         update_policy(policy, sub_dims, dist_d, new_v, h_d, r_d, p1, p2)
                         for new_h in h_d+1:sub_dims[3]
                             update_policy(policy, sub_dims, dist_d, new_v, new_h, r_d, p1, p2)
@@ -109,7 +112,7 @@ function final_proj_q(data; state_range = 1)
     actions = [0,1]
     learning_rate = 0.1
     discount = 1.0
-    Q = qlearning(data, discount, learning_rate, states, actions, 1000)
+    Q = qlearning(data, discount, learning_rate, states, actions, 5000)
     new_actions = [1,2]
     policy = find_policy_from_values(Q, states, new_actions, n)
     policy = new_nearest_neighbor(policy, sub_dims)

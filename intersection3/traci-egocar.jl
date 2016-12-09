@@ -23,10 +23,12 @@ sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 #classifier = intent.loadDNNonly()
 all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
-start_sarsp_at = 1  
-for i = 1:1000
-
-  println(i/10, "%")
+start_sarsp_at = 1
+num_sims = 10000
+for i = 1:num_sims
+  if num_sims <= 1000 || i % round(num_sims / 1000) == 0
+    println((i*100)/num_sims, "%")
+  end
 
   randomizeRoutes()
   initSimulation(gui = false)
@@ -80,11 +82,12 @@ for i = 1:1000
   traci.close()
 
   reward = calculateReward(end_dists, last_step, collision, oncoming_cars)
+  println(reward)
   n = size(all_states)[1]
   for j = start_sarsp_at:n
       s, sub_dims = convertDiscreteState(all_states[j,:])
       push!(sarsp_df, [s[1], 0, -1, 0])
-      if j > 1
+      if j > start_sarsp_at
         sarsp_df[end-1,:sp] = s[1]
       end
   end
@@ -92,11 +95,13 @@ for i = 1:1000
 
 
   sarsp_df[end,:a] = 1
-  try
-    sarsp_df[end,:r] = round(reward)
-  catch
-    sarsp_df[end,:r] = 0
-  end
+  sarsp_df[end,:r] = round(reward)
+  #try
+  #  sarsp_df[end,:r] = round(reward)
+  #catch
+  #  println("failed reward:", reward)
+  #  sarsp_df[end,:r] = 0
+  #end
   sarsp_df[end,:sp] = 0
 
 end

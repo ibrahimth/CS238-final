@@ -8,7 +8,10 @@ using DataFrames
 
 include("./functions.jl")
 
-doing_intentions = true
+doing_intentions = false
+if "intents" in ARGS
+    doing_intentions = true
+end
 doing_baseline = false #options: false, "rand", "tti"
 policy_name = "final_q.policy"
 if doing_intentions
@@ -24,8 +27,8 @@ end
 net = sumonet.readNet("i3.net.xml")
 pos_i = net[:getNode]("center")[:getCoord]()
 
-start_policy_at = 150
-n_trials = 2000
+start_policy_at = 140
+n_trials = 3000
 n_tracked_cars = 2
 timestep = 0.1
 rewards = zeros(Float64, n_trials)
@@ -98,7 +101,6 @@ for j = 1:n_trials
           println("error assigning policy state:",s)
         end
         if doing_baseline == "tti"
-            policy = 0
             tti = features[1,:dist] / sqrt(features[1,:vel_x]^2 + features[1,:vel_y]^2)
             if tti >= 3.0
                 policy = 1
@@ -133,6 +135,9 @@ for j = 1:n_trials
   end
   traci.close()
   this_wait = last_step - start_policy_at
+  if this_wait < 0
+    this_wait = last_step
+  end
   avg_wait += convert(Float64,(this_wait - avg_wait)) / j
   try
       reward += calculateReward(end_dists, last_step, collision, last_tracked_cars)
