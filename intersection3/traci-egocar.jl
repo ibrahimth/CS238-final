@@ -17,6 +17,16 @@ pos_i = net[:getNode]("center")[:getCoord]()
 n_tracked_cars = 2
 timestep = 0.1
 
+TTI_policy = false
+if "tti" in ARGS
+    println("Doing with tti")
+    TTI_policy = true
+    #Was gonna try to do online Q learning for exploration, but nah
+    #N = Array(convertDiscreteState(nothing))
+    #Acts = [0,1]
+    #Q = spzeros(N, 2)
+    #N = spzeros(N, 2)
+end
 
 sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 
@@ -24,7 +34,8 @@ sarsp_df = DataFrame(s = Int64[], a = Int64[], r = Int64[], sp = Int64[])
 all_states = DataFrame(dist=Float64[], speed = Float64[], headway = Float64[], rearway=Float64[], p1 = Float64[], p2 = Float64[])
 all_features = DataFrame(vid=Any[], fid=Float64[], vel_x=Float64[], vel_y=Float64[], Ax=Float64[], Ay=Float64[], yaw=Float64[], numberOfLanesToMedian=Float64[], numberOfLanesToCurb=Float64[], headway=Float64[], dist=Float64[], nextmove=Float64[])
 start_sarsp_at = 1
-num_sims = 10000
+num_sims = 5000
+start_policy_at = 140
 for i = 1:num_sims
   println((i*100)/num_sims, "%")
 
@@ -44,21 +55,32 @@ for i = 1:num_sims
     step += 1
     traci.simulationStep();
     pos_ego = traci.vehicle[:getPosition]("ego1")
-    if step > 140 && step < go
-      vehciles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
-      if !isempty(states[1])
-        all_states = [all_states;states[1,:]]
-        all_features = [all_features; features[1,:]]
-      end
+    policy = 0 #default
+    if step > start_policy_at
+        vehciles, dists, dists_sort, states, features = getSimulationInfo(step, n_tracked_cars, v_dict, i_dict)
+        if !isempty(states[1])
+            all_states = [all_states;states[1,:]]
+            all_features = [all_features; features[1,:]]
+            s, sub_dims = convertDiscreteState(states[1,:])
+            if TTI_policy == true
+                tti = features[1,:dist] / sqrt(features[1,:vel_x]^2 + features[1,:vel_y]^2)
+                if tti > 2.0 || rand() > 0.80 #explore with 20% probability
+                   policy = 1
+                end
+            else
+                policy = Int(go <= step)
+            end
+        end
     end
 
-    if step < go
+    if policy == 0
       traci.vehicle[:slowDown]("ego1", 0, 100);
-    elseif step == go
-      traci.vehicle[:slowDown]("ego1", 20, 5000);
-      oncoming_cars = features[:, :vid]
+    #elseif step == go
+    #  traci.vehicle[:slowDown]("ego1", 20, 5000);
+    #  oncoming_cars = features[:, :vid]
     else
       traci.vehicle[:slowDown]("ego1", 20, 5000);
+      oncoming_cars = features[:, :vid]
       collision = checkForcollisions()
       if collision
         break
@@ -102,6 +124,10 @@ for i = 1:num_sims
   #end
   sarsp_df[end,:sp] = 0
 
+  #might as well save every time
+  writetable("SARSP.csv",sarsp_df)
+  writetable("simulated_states.csv", all_states)
+  writetable("simulated_corresponding_features.csv",all_features)
 end
 
 writetable("SARSP.csv",sarsp_df)

@@ -40,6 +40,7 @@ end
 
 function new_nearest_neighbor(orig_policy, sub_dims)
     policy = deepcopy(orig_policy) # to make sure no domino effect
+    return policy
     for s in 1:length(policy)
         if orig_policy[s] == 2
             state = ind2sub(sub_dims, s)
